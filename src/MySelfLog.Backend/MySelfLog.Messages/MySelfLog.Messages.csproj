@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateDiary.cs" />
     <Compile Include="LogValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

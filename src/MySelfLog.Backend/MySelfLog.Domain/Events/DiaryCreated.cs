@@ -6,14 +6,10 @@ namespace MySelfLog.Domain.Events
     public class DiaryCreated : Event
     {
         public Guid CorrelationId { get; }
-        public string Name { get; }
-        public Guid ProfileId { get; }
 
-        public DiaryCreated(Guid correlationId, string name, Guid profileId)
+        public DiaryCreated(Guid correlationId)
         {
             CorrelationId = correlationId;
-            Name = name;
-            ProfileId = profileId;
         }
     }
 }

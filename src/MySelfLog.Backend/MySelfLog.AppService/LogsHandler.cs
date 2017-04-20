@@ -14,12 +14,18 @@ namespace MySelfLog.AppService
             _repository = repository;
         }
 
-        // TODO implement creatediary handling
-
         public IAggregate Handle(LogValue command)
         {
-            var aggregate = _repository.GetById<Diary>(command.CorrelationId.ToString());
-            // TODO log the value
+            DiaryAggregate aggregate;
+            try
+            {
+                aggregate = _repository.GetById<DiaryAggregate>(command.CorrelationId.ToString());
+            }
+            catch (AggregateNotFoundException)
+            {
+                aggregate = DiaryAggregate.Create(command.CorrelationId);
+            }
+            aggregate.LogValue(command);
             return aggregate;
         }
     }

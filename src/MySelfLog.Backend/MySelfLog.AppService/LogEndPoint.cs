@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
@@ -13,14 +12,16 @@ namespace MySelfLog.AppService
     public class LogEndPoint
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(LogEndPoint));
+        private readonly IDomainRepository _domainRepository;
         private readonly IEventStoreConnection _connection;
         private readonly LogsHandler _logsHandler;
-        private string InputStream = "log-input";
-        private string PersistentSubscriptionGroup = "myselflog-processors";
+        private const string InputStream = "log-input";
+        private const string PersistentSubscriptionGroup = "myselflog-processors";
 
         public LogEndPoint(IDomainRepository domainRepository, IEventStoreConnection connection)
         {
             _logsHandler = new LogsHandler(domainRepository);
+            _domainRepository = domainRepository;
             _connection = connection;
         }
 
@@ -45,12 +46,15 @@ namespace MySelfLog.AppService
             {
                 var e = resolvedEvent.Event;
                 var eventJson = Encoding.UTF8.GetString(e.Data);
-                var cmd = JsonConvert.DeserializeObject<LogValue>(eventJson);
-
+                var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
+                _domainRepository.Save(aggregate);
+                Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
             }
             catch (Exception ex)
             {
                 Log.Error(ex);
+                eventStorePersistentSubscriptionBase.Fail(resolvedEvent, PersistentSubscriptionNakEventAction.Park,
+                    ex.GetBaseException().Message);
             }
         }
         public void Stop()
