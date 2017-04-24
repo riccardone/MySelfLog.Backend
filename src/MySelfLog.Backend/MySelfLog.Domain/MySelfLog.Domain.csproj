@@ -49,6 +49,7 @@
     <Compile Include="Events\DiaryCreated.cs" />
     <Compile Include="Events\TerapyLogged.cs" />
     <Compile Include="Events\FoodLogged.cs" />
+    <Compile Include="Events\GlucoseLogged.cs" />
     <Compile Include="Events\ValueLogged.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

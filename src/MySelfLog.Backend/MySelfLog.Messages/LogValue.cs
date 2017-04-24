@@ -14,9 +14,10 @@ namespace MySelfLog.Messages
         public bool IsSlow { get; }
         public int Calories { get; }
         public string FoodTypes { get; }
+        public string SecurityLink { get; }
 
         public LogValue(Guid correlationId, int value, string message, DateTime logDate, string email, int terapyValue,
-            bool isSlow, int calories, string foodTypes)
+            bool isSlow, int calories, string foodTypes, string securityLink)
         {
             CorrelationId = correlationId;
             Value = value;
@@ -27,6 +28,7 @@ namespace MySelfLog.Messages
             IsSlow = isSlow;
             Calories = calories;
             FoodTypes = foodTypes;
+            SecurityLink = securityLink;
         }
     }
 }

@@ -41,15 +41,15 @@ namespace MySelfLog.Domain.Aggregates
 
             if (logValue.Value > 0)
             {
-                RaiseEvent(new ValueLogged(logValue.Value, logValue.Message, logValue.LogDate));
+                RaiseEvent(new GlucoseLogged(logValue.Value, logValue.Message, logValue.LogDate, logValue.SecurityLink));
             }
             if (logValue.TerapyValue > 0)
             {
-                RaiseEvent(new TerapyLogged(logValue.TerapyValue, logValue.Message, logValue.LogDate, logValue.IsSlow));
+                RaiseEvent(new TerapyLogged(logValue.TerapyValue, logValue.Message, logValue.LogDate, logValue.IsSlow, logValue.SecurityLink));
             }
             if (logValue.Calories > 0)
             {
-                RaiseEvent(new FoodLogged(logValue.Calories, logValue.FoodTypes, logValue.Message, logValue.LogDate));
+                RaiseEvent(new FoodLogged(logValue.Calories, logValue.FoodTypes, logValue.Message, logValue.LogDate, logValue.SecurityLink));
             }
         }
     }
