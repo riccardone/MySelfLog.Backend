@@ -29,7 +29,6 @@ namespace MySelfLog.AppService
         {
             try
             {
-                CreatePersistentSubscription();
                 Subscribe();
                 Log.Info("AssociateAccount EndPoint started");
                 return true;
@@ -48,6 +47,7 @@ namespace MySelfLog.AppService
                 var eventJson = Encoding.UTF8.GetString(e.Data);
                 var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
                 _domainRepository.Save(aggregate);
+                //eventStorePersistentSubscriptionBase.Acknowledge(resolvedEvent);
                 Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
             }
             catch (Exception ex)
@@ -70,21 +70,10 @@ namespace MySelfLog.AppService
 
         private void SubscriptionDropped(EventStorePersistentSubscriptionBase eventStorePersistentSubscriptionBase, SubscriptionDropReason subscriptionDropReason, Exception arg3)
         {
-            throw new NotImplementedException();
+            Log.Error(subscriptionDropReason.ToString(), arg3);
         }
 
-        private void CreatePersistentSubscription()
-        {
-            try
-            {
-                _connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
-                    PersistentSubscriptionSettings.Create(), new UserCredentials("admin", "changeit")).Wait();
-            }
-            catch (Exception ex)
-            {
-                // Already exist
-            }
-        }
+        
         #endregion
     }
 }

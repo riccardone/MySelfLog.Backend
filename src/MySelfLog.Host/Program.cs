@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using EventStore.Tools.Infrastructure.Repository;
@@ -22,19 +17,22 @@ namespace MySelfLog.Host
             {
                 x.UseLinuxIfAvailable();
                 x.UseLog4Net();
+                var esConfig = new EventStoreConfiguration();
                 x.Service<LogEndPoint>(s =>
                 {
-                    var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials("admin", "changeit"))
+                    var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials(esConfig.UserName, esConfig.Password))
                         .KeepReconnecting().KeepRetrying().Build();
                     var endpointConnection = EventStoreConnection.Create(connSettings,
-                        new IPEndPoint(IPAddress.Loopback, 1113), "ES-Subscriber");
+                        new IPEndPoint(IPAddress.Parse(esConfig.Node1HostName), esConfig.Node1TcpPort), "ES-Subscriber");
                     var domainConnection = EventStoreConnection.Create(connSettings,
-                        new IPEndPoint(IPAddress.Loopback, 1113), "ES-Processor");
+                        new IPEndPoint(IPAddress.Parse(esConfig.Node1HostName), esConfig.Node1TcpPort), "ES-Processor");
                     endpointConnection.ConnectAsync().Wait();
                     domainConnection.ConnectAsync().Wait();
+                    var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
+                    subscriptionManager.CreateSubscription();
                     s.ConstructUsing(
                         name =>
-                            new LogEndPoint(new EventStoreDomainRepository("diary", domainConnection),
+                            new LogEndPoint(new EventStoreDomainRepository("logs", domainConnection),
                                 endpointConnection));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());
