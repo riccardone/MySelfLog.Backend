@@ -9,6 +9,7 @@ namespace MySelfLog.Domain.Aggregates
     {
         public override string AggregateId => CorrelationId.ToString();
         private Guid CorrelationId { get; set; }
+        private string SecurityLink { get; set; }
 
         public DiaryAggregate()
         {
@@ -18,17 +19,24 @@ namespace MySelfLog.Domain.Aggregates
         private void Apply(DiaryCreated obj)
         {
             CorrelationId = obj.CorrelationId;
+            SecurityLink = obj.SecurityLink;
         }
 
-        public DiaryAggregate(Guid correlationId) : this()
+        public DiaryAggregate(Guid correlationId, string securityLink) : this()
         {
-            RaiseEvent(new DiaryCreated(correlationId));
+            RaiseEvent(new DiaryCreated(correlationId, securityLink));
         }
 
         public static DiaryAggregate Create(Guid correlationId)
         {
             Ensure.NotEmptyGuid(correlationId, nameof(correlationId));
-            return new DiaryAggregate(correlationId);
+            
+            return new DiaryAggregate(correlationId, GetSecurityLink());
+        }
+
+        private static string GetSecurityLink()
+        {
+            return Guid.NewGuid().GetHashCode().ToString();
         }
 
         public void LogValue(LogValue logValue)
@@ -41,15 +49,15 @@ namespace MySelfLog.Domain.Aggregates
 
             if (logValue.Value > 0)
             {
-                RaiseEvent(new GlucoseLogged(logValue.Value, logValue.Message, logValue.LogDate, logValue.SecurityLink));
+                RaiseEvent(new GlucoseLogged(logValue.Value, logValue.Message, logValue.LogDate, SecurityLink));
             }
             if (logValue.TerapyValue > 0)
             {
-                RaiseEvent(new TerapyLogged(logValue.TerapyValue, logValue.Message, logValue.LogDate, logValue.IsSlow, logValue.SecurityLink));
+                RaiseEvent(new TerapyLogged(logValue.TerapyValue, logValue.Message, logValue.LogDate, logValue.IsSlow, SecurityLink));
             }
             if (logValue.Calories > 0)
             {
-                RaiseEvent(new FoodLogged(logValue.Calories, logValue.FoodTypes, logValue.Message, logValue.LogDate, logValue.SecurityLink));
+                RaiseEvent(new FoodLogged(logValue.Calories, logValue.FoodTypes, logValue.Message, logValue.LogDate, SecurityLink));
             }
         }
     }

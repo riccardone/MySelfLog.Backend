@@ -9,26 +9,22 @@ namespace MySelfLog.Messages
         public string Message { get; }
         public int Value { get; }
         public DateTime LogDate { get; }
-        public string Email { get; }
         public int TerapyValue { get; }
         public bool IsSlow { get; }
         public int Calories { get; }
         public string FoodTypes { get; }
-        public string SecurityLink { get; }
 
-        public LogValue(Guid correlationId, int value, string message, DateTime logDate, string email, int terapyValue,
-            bool isSlow, int calories, string foodTypes, string securityLink)
+        public LogValue(Guid correlationId, int value, string message, DateTime logDate, int terapyValue,
+            bool isSlow, int calories, string foodTypes)
         {
             CorrelationId = correlationId;
             Value = value;
             Message = message;
             LogDate = logDate;
-            Email = email;
             TerapyValue = terapyValue;
             IsSlow = isSlow;
             Calories = calories;
             FoodTypes = foodTypes;
-            SecurityLink = securityLink;
         }
     }
 }
