@@ -29,6 +29,7 @@ namespace MySelfLog.AppService
         {
             try
             {
+                CreatePersistentSubscription();
                 Subscribe();
                 Log.Info("AssociateAccount EndPoint started");
                 return true;
@@ -69,10 +70,21 @@ namespace MySelfLog.AppService
 
         private void SubscriptionDropped(EventStorePersistentSubscriptionBase eventStorePersistentSubscriptionBase, SubscriptionDropReason subscriptionDropReason, Exception arg3)
         {
-            Log.Error(subscriptionDropReason.ToString(), arg3);
+            throw new NotImplementedException();
         }
 
-        
+        private void CreatePersistentSubscription()
+        {
+            try
+            {
+                _connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
+                    PersistentSubscriptionSettings.Create(), new UserCredentials("admin", "changeit")).Wait();
+            }
+            catch (Exception ex)
+            {
+                // Already exist
+            }
+        }
         #endregion
     }
 }
