@@ -45,14 +45,32 @@ namespace MySelfLog.AppService
             {
                 var e = resolvedEvent.Event;
                 var eventJson = Encoding.UTF8.GetString(e.Data);
-                var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
+                IAggregate aggregate;
+                // TODO used a command factory
+                switch (e.EventType)
+                {
+                    case "CreateDiary":
+                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<CreateDiary>(eventJson));
+                        break;
+                    case "LogValue":
+                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
+                        break;
+                    default:
+                        return;
+                }
                 _domainRepository.Save(aggregate);
                 Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
+            }
+            catch (AggregateNotFoundException exNotFound)
+            {
+                Log.Error(exNotFound);
+                eventStorePersistentSubscriptionBase.Fail(resolvedEvent, PersistentSubscriptionNakEventAction.Park,
+                    exNotFound.GetBaseException().Message);
             }
             catch (Exception ex)
             {
                 Log.Error(ex);
-                eventStorePersistentSubscriptionBase.Fail(resolvedEvent, PersistentSubscriptionNakEventAction.Park,
+                eventStorePersistentSubscriptionBase.Fail(resolvedEvent, PersistentSubscriptionNakEventAction.Unknown,
                     ex.GetBaseException().Message);
             }
         }
@@ -72,7 +90,7 @@ namespace MySelfLog.AppService
             Log.Error(subscriptionDropReason.ToString(), arg3);
         }
 
-        
+
         #endregion
     }
 }

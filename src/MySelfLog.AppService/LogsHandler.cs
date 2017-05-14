@@ -5,7 +5,7 @@ using MySelfLog.Messages;
 
 namespace MySelfLog.AppService
 {
-    public class LogsHandler : IHandle<LogValue>
+    public class LogsHandler : IHandle<LogValue>, IHandle<CreateDiary>
     {
         private readonly IDomainRepository _repository;
 
@@ -16,6 +16,13 @@ namespace MySelfLog.AppService
 
         public IAggregate Handle(LogValue command)
         {
+            var aggregate = _repository.GetById<DiaryAggregate>(command.CorrelationId.ToString());
+            aggregate.LogValue(command);
+            return aggregate;
+        }
+
+        public IAggregate Handle(CreateDiary command)
+        {
             DiaryAggregate aggregate;
             try
             {
@@ -25,7 +32,6 @@ namespace MySelfLog.AppService
             {
                 aggregate = DiaryAggregate.Create(command.CorrelationId);
             }
-            aggregate.LogValue(command);
             return aggregate;
         }
     }
