@@ -1,11 +1,14 @@
-﻿using System;
-using EventStore.Tools.Infrastructure;
+﻿using Evento;
 using MySelfLog.Domain.Aggregates;
-using MySelfLog.Messages;
+using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.AppService
 {
-    public class LogsHandler : IHandle<LogValue>, IHandle<CreateDiary>
+    public class LogsHandler : 
+        IHandle<LogValue>, 
+        IHandle<CreateDiary>,
+        IHandle<LogFood>,
+        IHandle<LogTerapy>
     {
         private readonly IDomainRepository _repository;
 
@@ -32,6 +35,20 @@ namespace MySelfLog.AppService
             {
                 aggregate = DiaryAggregate.Create(command.CorrelationId);
             }
+            return aggregate;
+        }
+
+        public IAggregate Handle(LogFood command)
+        {
+            var aggregate = _repository.GetById<DiaryAggregate>(command.CorrelationId.ToString());
+            aggregate.LogFood(command);
+            return aggregate;
+        }
+
+        public IAggregate Handle(LogTerapy command)
+        {
+            var aggregate = _repository.GetById<DiaryAggregate>(command.CorrelationId.ToString());
+            aggregate.LogTerapy(command);
             return aggregate;
         }
     }

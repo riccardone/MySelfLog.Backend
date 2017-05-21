@@ -1,5 +1,5 @@
 ﻿using System;
-using EventStore.Tools.Infrastructure;
+using Evento;
 
 namespace MySelfLog.Domain.Events
 {

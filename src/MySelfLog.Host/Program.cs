@@ -1,7 +1,7 @@
 ﻿using System.Net;
+using Evento.Repository;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
-using EventStore.Tools.Infrastructure.Repository;
 using log4net.Config;
 using MySelfLog.AppService;
 using Topshelf;

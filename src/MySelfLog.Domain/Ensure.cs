@@ -51,6 +51,11 @@ namespace MySelfLog.Domain
             if (number < 0)
                 throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be non negative.");
         }
+        public static void NonLessThan50Years(DateTime date, string argumentName)
+        {
+            if ((date - DateTime.Now).TotalDays < 18250)
+                throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be a valid date");
+        }
 
         public static void NotEmptyGuid(Guid guid, string argumentName)
         {

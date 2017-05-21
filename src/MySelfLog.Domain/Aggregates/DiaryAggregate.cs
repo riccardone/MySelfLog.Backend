@@ -1,7 +1,7 @@
 ﻿using System;
-using EventStore.Tools.Infrastructure;
+using Evento;
+using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
-using MySelfLog.Messages;
 
 namespace MySelfLog.Domain.Aggregates
 {
@@ -30,7 +30,7 @@ namespace MySelfLog.Domain.Aggregates
         public static DiaryAggregate Create(Guid correlationId)
         {
             Ensure.NotEmptyGuid(correlationId, nameof(correlationId));
-            
+
             return new DiaryAggregate(correlationId, GetSecurityLink());
         }
 
@@ -39,26 +39,34 @@ namespace MySelfLog.Domain.Aggregates
             return Guid.NewGuid().GetHashCode().ToString();
         }
 
-        public void LogValue(LogValue logValue)
+        public void LogValue(LogValue log)
         {
-            Ensure.NotNull(logValue, nameof(logValue));
-            Ensure.NotEmptyGuid(logValue.CorrelationId, nameof(logValue.CorrelationId));
-            Ensure.Nonnegative(logValue.Value, nameof(logValue.Value));
-            Ensure.Nonnegative(logValue.TerapyValue, nameof(logValue.TerapyValue));
-            Ensure.Nonnegative(logValue.Calories, nameof(logValue.Calories));
+            Ensure.NotNull(log, nameof(log));
+            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.Nonnegative(log.Value, nameof(log.Value));
+            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
-            if (logValue.Value > 0)
-            {
-                RaiseEvent(new GlucoseLogged(logValue.Value, logValue.Message, logValue.LogDate, SecurityLink));
-            }
-            if (logValue.TerapyValue > 0)
-            {
-                RaiseEvent(new TerapyLogged(logValue.TerapyValue, logValue.Message, logValue.LogDate, logValue.IsSlow, SecurityLink));
-            }
-            if (logValue.Calories > 0)
-            {
-                RaiseEvent(new FoodLogged(logValue.Calories, logValue.FoodTypes, logValue.Message, logValue.LogDate, SecurityLink));
-            }
+            RaiseEvent(new GlucoseLogged(log.Value, log.Message, log.LogDate, SecurityLink));
+        }
+
+        public void LogTerapy(LogTerapy log)
+        {
+            Ensure.NotNull(log, nameof(log));
+            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.Nonnegative(log.TerapyValue, nameof(log.TerapyValue));
+            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
+
+            RaiseEvent(new TerapyLogged(log.TerapyValue, log.Message, log.LogDate, log.IsSlow, SecurityLink));
+        }
+
+        public void LogFood(LogFood log)
+        {
+            Ensure.NotNull(log, nameof(log));
+            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.Nonnegative(log.Calories, nameof(log.Calories));
+            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
+
+            RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.LogDate));
         }
     }
 }

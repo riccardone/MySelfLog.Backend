@@ -30,9 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EventStore.Tools.Infrastructure, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EventStore.Tools.Infrastructure.2.1.0\lib\net40\EventStore.Tools.Infrastructure.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Evento, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Evento.3.0.0\lib\net40\Evento.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregates\DiaryAggregate.cs" />
+    <Compile Include="Commands\CreateDiary.cs" />
+    <Compile Include="Commands\LogTerapy.cs" />
+    <Compile Include="Commands\LogFood.cs" />
+    <Compile Include="Commands\LogValue.cs" />
     <Compile Include="Ensure.cs" />
     <Compile Include="Events\DiaryCreated.cs" />
     <Compile Include="Events\TerapyLogged.cs" />
@@ -55,12 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MySelfLog.Messages\MySelfLog.Messages.csproj">
-      <Project>{c2780834-47f8-4aea-9352-525e663594b6}</Project>
-      <Name>MySelfLog.Messages</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

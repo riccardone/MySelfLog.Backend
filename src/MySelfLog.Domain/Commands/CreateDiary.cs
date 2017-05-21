@@ -1,7 +1,7 @@
 ﻿using System;
-using EventStore.Tools.Infrastructure;
+using Evento;
 
-namespace MySelfLog.Messages
+namespace MySelfLog.Domain.Commands
 {
     public class CreateDiary : Command
     {

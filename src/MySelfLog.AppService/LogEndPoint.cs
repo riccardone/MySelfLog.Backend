@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Text;
+using Evento;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.SystemData;
-using EventStore.Tools.Infrastructure;
 using log4net;
-using MySelfLog.Messages;
+using MySelfLog.Domain.Commands;
 using Newtonsoft.Json;
 
 namespace MySelfLog.AppService
@@ -30,7 +29,7 @@ namespace MySelfLog.AppService
             try
             {
                 Subscribe();
-                Log.Info("AssociateAccount EndPoint started");
+                Log.Info("Log EndPoint started");
                 return true;
             }
             catch (Exception ex)
@@ -54,6 +53,12 @@ namespace MySelfLog.AppService
                         break;
                     case "LogValue":
                         aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
+                        break;
+                    case "LogFood":
+                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogFood>(eventJson));
+                        break;
+                    case "LogTerapy":
+                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogTerapy>(eventJson));
                         break;
                     default:
                         return;
