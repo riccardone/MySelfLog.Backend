@@ -12,7 +12,7 @@ namespace MySelfLog.Host
     {
         private readonly IEventStoreConnection _connection;
         private readonly EventStoreConfiguration _configuration;
-        private const string InputStream = "log-input";
+        private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
 
         public PersistentSubscriptionManager(IEventStoreConnection connection, EventStoreConfiguration configuration)

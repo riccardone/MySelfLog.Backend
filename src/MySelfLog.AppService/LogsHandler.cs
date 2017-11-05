@@ -8,7 +8,8 @@ namespace MySelfLog.AppService
         IHandle<LogValue>, 
         IHandle<CreateDiary>,
         IHandle<LogFood>,
-        IHandle<LogTerapy>
+        IHandle<LogTerapy>,
+        IHandle<ProcessLogValue>
     {
         private readonly IDomainRepository _repository;
 
@@ -50,6 +51,11 @@ namespace MySelfLog.AppService
             var aggregate = _repository.GetById<DiaryAggregate>(command.CorrelationId.ToString());
             aggregate.LogTerapy(command);
             return aggregate;
+        }
+
+        public IAggregate Handle(ProcessLogValue command)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

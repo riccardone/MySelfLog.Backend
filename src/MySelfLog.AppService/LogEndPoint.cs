@@ -14,7 +14,7 @@ namespace MySelfLog.AppService
         private readonly IDomainRepository _domainRepository;
         private readonly IEventStoreConnection _connection;
         private readonly LogsHandler _logsHandler;
-        private const string InputStream = "log-input";
+        private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
 
         public LogEndPoint(IDomainRepository domainRepository, IEventStoreConnection connection)
@@ -44,25 +44,8 @@ namespace MySelfLog.AppService
             {
                 var e = resolvedEvent.Event;
                 var eventJson = Encoding.UTF8.GetString(e.Data);
-                IAggregate aggregate;
-                // TODO used a command factory
-                switch (e.EventType)
-                {
-                    case "CreateDiary":
-                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<CreateDiary>(eventJson));
-                        break;
-                    case "LogValue":
-                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
-                        break;
-                    case "LogFood":
-                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogFood>(eventJson));
-                        break;
-                    case "LogTerapy":
-                        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogTerapy>(eventJson));
-                        break;
-                    default:
-                        return;
-                }
+                // TODO deserialise and use metadata (especially the $correlationId)
+                var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<ProcessLogValue>(eventJson));
                 _domainRepository.Save(aggregate);
                 Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
             }
@@ -83,6 +66,25 @@ namespace MySelfLog.AppService
         {
             _connection.Close();
         }
+
+        // TODO used a command factory
+        //switch (e.EventType)
+        //{
+        //    case "CreateDiary":
+        //        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<CreateDiary>(eventJson));
+        //        break;
+        //    case "LogValue":
+        //        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogValue>(eventJson));
+        //        break;
+        //    case "LogFood":
+        //        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogFood>(eventJson));
+        //        break;
+        //    case "LogTerapy":
+        //        aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogTerapy>(eventJson));
+        //        break;
+        //    default:
+        //        return;
+        //}
 
         #region BoilerplateCode
         private void Subscribe()
