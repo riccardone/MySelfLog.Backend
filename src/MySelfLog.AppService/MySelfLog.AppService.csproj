@@ -55,7 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogDto.cs" />
     <Compile Include="LogEndPoint.cs" />
+    <Compile Include="LogFromJsonWrapper.cs" />
     <Compile Include="LogsHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

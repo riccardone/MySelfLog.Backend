@@ -8,12 +8,14 @@ namespace MySelfLog.Domain.Commands
         public Guid CorrelationId { get; }
         public string Message { get; }
         public int Value { get; }
+        public decimal MmolValue { get; }
         public DateTime LogDate { get; }
 
-        public LogValue(Guid correlationId, int value, string message, DateTime logDate)
+        public LogValue(Guid correlationId, int value, decimal mmolValue, string message, DateTime logDate)
         {
             CorrelationId = correlationId;
             Value = value;
+            MmolValue = mmolValue;
             Message = message;
             LogDate = logDate;
         }

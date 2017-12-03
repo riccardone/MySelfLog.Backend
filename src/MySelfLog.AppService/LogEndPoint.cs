@@ -45,9 +45,10 @@ namespace MySelfLog.AppService
                 var e = resolvedEvent.Event;
                 var eventJson = Encoding.UTF8.GetString(e.Data);
                 // TODO deserialise and use metadata (especially the $correlationId)
-                var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<ProcessLogValue>(eventJson));
-                _domainRepository.Save(aggregate);
-                Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
+                var ciccio = new LogFromJsonWrapper(eventJson);
+                //var aggregate = _logsHandler.Handle(JsonConvert.DeserializeObject<LogDto>(eventJson));
+                //_domainRepository.Save(aggregate);
+                //Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
             }
             catch (AggregateNotFoundException exNotFound)
             {
