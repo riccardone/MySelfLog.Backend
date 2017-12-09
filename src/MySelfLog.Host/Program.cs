@@ -3,7 +3,6 @@ using Evento.Repository;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using log4net.Config;
-using MySelfLog.AppService;
 using Topshelf;
 
 namespace MySelfLog.Host
@@ -18,7 +17,7 @@ namespace MySelfLog.Host
                 x.UseLinuxIfAvailable();
                 x.UseLog4Net();
                 var esConfig = new EventStoreConfiguration();
-                x.Service<LogEndPoint>(s =>
+                x.Service<Adapter.EndPoint>(s =>
                 {
                     var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials(esConfig.UserName, esConfig.Password))
                         .KeepReconnecting().KeepRetrying().Build();
@@ -32,7 +31,7 @@ namespace MySelfLog.Host
                     subscriptionManager.CreateSubscription();
                     s.ConstructUsing(
                         name =>
-                            new LogEndPoint(new EventStoreDomainRepository("logs", domainConnection),
+                            new Adapter.EndPoint(new EventStoreDomainRepository("logs", domainConnection),
                                 endpointConnection));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());

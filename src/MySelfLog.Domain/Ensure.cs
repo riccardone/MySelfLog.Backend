@@ -53,7 +53,7 @@ namespace MySelfLog.Domain
         }
         public static void NonLessThan50Years(DateTime date, string argumentName)
         {
-            if ((date - DateTime.Now).TotalDays < 18250)
+            if ((date - DateTime.Now).TotalDays > 18250)
                 throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be a valid date");
         }
 

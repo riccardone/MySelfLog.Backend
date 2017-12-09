@@ -5,13 +5,13 @@ namespace MySelfLog.Domain.Commands
 {
     public class LogValue : Command
     {
-        public Guid CorrelationId { get; }
+        public string CorrelationId { get; }
         public string Message { get; }
         public int Value { get; }
         public decimal MmolValue { get; }
         public DateTime LogDate { get; }
 
-        public LogValue(Guid correlationId, int value, decimal mmolValue, string message, DateTime logDate)
+        public LogValue(string correlationId, int value, decimal mmolValue, string message, DateTime logDate)
         {
             CorrelationId = correlationId;
             Value = value;

@@ -5,13 +5,13 @@ namespace MySelfLog.Domain.Commands
 {
     public class LogFood : Command
     {
-        public Guid CorrelationId { get; }
+        public string CorrelationId { get; }
         public string Message { get; }
         public DateTime LogDate { get; }
         public int Calories { get; }
         public string FoodTypes { get; }
 
-        public LogFood(Guid correlationId, string message, DateTime logDate, int calories, string foodTypes)
+        public LogFood(string correlationId, string message, DateTime logDate, int calories, string foodTypes)
         {
             CorrelationId = correlationId;
             Message = message;

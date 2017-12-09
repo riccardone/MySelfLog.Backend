@@ -5,13 +5,13 @@ using MySelfLog.Domain.Events;
 
 namespace MySelfLog.Domain.Aggregates
 {
-    public class DiaryAggregate : AggregateBase
+    public class Diary : AggregateBase
     {
-        public override string AggregateId => CorrelationId.ToString();
-        private Guid CorrelationId { get; set; }
+        public override string AggregateId => CorrelationId;
+        private string CorrelationId { get; set; }
         private string SecurityLink { get; set; }
 
-        public DiaryAggregate()
+        public Diary()
         {
             RegisterTransition<DiaryCreated>(Apply);
         }
@@ -22,16 +22,16 @@ namespace MySelfLog.Domain.Aggregates
             SecurityLink = obj.SecurityLink;
         }
 
-        public DiaryAggregate(Guid correlationId, string securityLink) : this()
+        public Diary(string correlationId, string securityLink) : this()
         {
             RaiseEvent(new DiaryCreated(correlationId, securityLink));
         }
 
-        public static DiaryAggregate Create(Guid correlationId)
+        public static Diary Create(CreateDiary cmd)
         {
-            Ensure.NotEmptyGuid(correlationId, nameof(correlationId));
+            Ensure.NotNullOrWhiteSpace(cmd.CorrelationId, nameof(cmd.CorrelationId));
 
-            return new DiaryAggregate(correlationId, GetSecurityLink());
+            return new Diary(cmd.CorrelationId, GetSecurityLink());
         }
 
         private static string GetSecurityLink()
@@ -42,7 +42,7 @@ namespace MySelfLog.Domain.Aggregates
         public void LogValue(LogValue log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
             Ensure.Nonnegative(log.Value, nameof(log.Value));
             Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
@@ -52,21 +52,26 @@ namespace MySelfLog.Domain.Aggregates
         public void LogTerapy(LogTerapy log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
-            Ensure.Nonnegative(log.TerapyValue, nameof(log.TerapyValue));
+            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.Nonnegative(log.FastTerapy, nameof(log.FastTerapy));
+            Ensure.Nonnegative(log.SlowTerapy, nameof(log.SlowTerapy));
             Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
-            RaiseEvent(new TerapyLogged(log.TerapyValue, log.Message, log.LogDate, log.IsSlow, SecurityLink));
+            if (log.FastTerapy > 0)
+                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false, SecurityLink));
+            else if (log.SlowTerapy > 0)
+                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false, SecurityLink));
         }
 
         public void LogFood(LogFood log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotEmptyGuid(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
             Ensure.Nonnegative(log.Calories, nameof(log.Calories));
             Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
-            RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.LogDate));
+            if (log.Calories > 0)
+                RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.LogDate));
         }
     }
 }
