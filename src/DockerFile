@@ -1,5 +1,4 @@
 FROM mono:latest
 
-RUN mkdir /data
 ADD MySelfLog.Host/bin/Debug .
 CMD [ "mono",  "MySelfLog.Host.exe" ]

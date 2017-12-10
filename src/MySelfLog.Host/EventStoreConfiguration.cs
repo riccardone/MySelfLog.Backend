@@ -22,21 +22,12 @@ namespace MySelfLog.Host
             }
         }
 
-        public string Node1HostName
+        public System.Uri EventStoreLink
         {
             get
             {
-                var host = ConfigurationManager.AppSettings["EventStoreNode1HostName"];
-                return string.IsNullOrEmpty(host) ? "127.0.0.1" : host;
-            }
-        }
-
-        public int Node1TcpPort
-        {
-            get
-            {
-                int port;
-                return int.TryParse(ConfigurationManager.AppSettings["EventStoreNode1TcpPort"], out port) ? port : 1113;
+                var host = ConfigurationManager.AppSettings["EventStoreLink"];
+                return string.IsNullOrEmpty(host) ? new System.Uri("tcp://admin:changeit@localhost:1113") : new System.Uri(host);
             }
         }
     }
