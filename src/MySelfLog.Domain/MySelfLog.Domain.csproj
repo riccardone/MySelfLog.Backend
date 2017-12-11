@@ -44,12 +44,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregates\Diary.cs" />
+    <Compile Include="Aggregates\GlucoseValue.cs" />
     <Compile Include="Commands\CreateDiary.cs" />
     <Compile Include="Commands\LogTerapy.cs" />
     <Compile Include="Commands\LogFood.cs" />
     <Compile Include="Commands\LogValue.cs" />
     <Compile Include="Ensure.cs" />
     <Compile Include="Events\DiaryCreated.cs" />
+    <Compile Include="Events\SecurityLinkChanged.cs" />
     <Compile Include="Events\TerapyLogged.cs" />
     <Compile Include="Events\FoodLogged.cs" />
     <Compile Include="Events\GlucoseLogged.cs" />

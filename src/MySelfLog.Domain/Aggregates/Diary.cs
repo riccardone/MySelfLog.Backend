@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Evento;
 using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
@@ -10,10 +11,24 @@ namespace MySelfLog.Domain.Aggregates
         public override string AggregateId => CorrelationId;
         private string CorrelationId { get; set; }
         private string SecurityLink { get; set; }
+        //private List<GlucoseValue> GlucoseValues { get; set; } 
 
         public Diary()
         {
+            //GlucoseValues = new List<GlucoseValue>();
             RegisterTransition<DiaryCreated>(Apply);
+            RegisterTransition<SecurityLinkChanged>(Apply);
+            //RegisterTransition<GlucoseLogged>(Apply);
+        }
+
+        //private void Apply(GlucoseLogged obj)
+        //{
+        //   GlucoseValues.Add(new GlucoseValue(obj.Value, obj.MmolValue, obj.Message, obj.LogDate));
+        //}
+
+        private void Apply(SecurityLinkChanged obj)
+        {
+            SecurityLink = obj.SecurityLink;
         }
 
         private void Apply(DiaryCreated obj)
@@ -46,7 +61,8 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.Nonnegative(log.Value, nameof(log.Value));
             Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
-            RaiseEvent(new GlucoseLogged(log.Value, log.Message, log.LogDate, SecurityLink));
+            if (log.Value > 0 || log.MmolValue > 0)
+                RaiseEvent(new GlucoseLogged(log.Value, log.MmolValue, log.Message, log.LogDate));
         }
 
         public void LogTerapy(LogTerapy log)
@@ -58,9 +74,9 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
 
             if (log.FastTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false, SecurityLink));
+                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false));
             else if (log.SlowTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false, SecurityLink));
+                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false));
         }
 
         public void LogFood(LogFood log)
@@ -72,6 +88,11 @@ namespace MySelfLog.Domain.Aggregates
 
             if (log.Calories > 0)
                 RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.LogDate));
+        }
+
+        public void ChangeSecurityLink()
+        {
+            RaiseEvent(new SecurityLinkChanged(GetSecurityLink()));
         }
     }
 }
