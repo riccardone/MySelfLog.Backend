@@ -21,10 +21,8 @@ namespace MySelfLog.Host
                 {
                     var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials(esConfig.UserName, esConfig.Password))
                         .KeepReconnecting().KeepRetrying().Build();
-                    var endpointConnection = EventStoreConnection.Create(connSettings,
-                        new IPEndPoint(IPAddress.Parse(esConfig.Node1HostName), esConfig.Node1TcpPort), "ES-Subscriber");
-                    var domainConnection = EventStoreConnection.Create(connSettings,
-                        new IPEndPoint(IPAddress.Parse(esConfig.Node1HostName), esConfig.Node1TcpPort), "ES-Processor");
+                    var endpointConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreLink, "ES-Subscriber");
+                    var domainConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreLink, "ES-Processor");
                     endpointConnection.ConnectAsync().Wait();
                     domainConnection.ConnectAsync().Wait();
                     var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
