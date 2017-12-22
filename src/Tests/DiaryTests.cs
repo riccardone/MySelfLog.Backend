@@ -11,10 +11,10 @@ namespace Tests
     public class DiaryTests
     {
         [Test]
-        public void LogGlocose()
+        public void LogGlucose()
         {
             // Set up
-            var cmd = new CreateDiary("123", String.Empty, String.Empty);
+            var cmd = new CreateDiary("123", string.Empty, String.Empty);
             var logGlucose = new LogValue("123", 100, 0, "test", new DateTime(2017, 5, 1));
 
             // Act
