@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Evento;
 using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
@@ -75,8 +74,8 @@ namespace MySelfLog.Domain.Aggregates
 
             if (log.FastTerapy > 0)
                 RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false));
-            else if (log.SlowTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false));
+            if (log.SlowTerapy > 0)
+                RaiseEvent(new TerapyLogged(log.SlowTerapy, log.Message, log.LogDate, true));
         }
 
         public void LogFood(LogFood log)

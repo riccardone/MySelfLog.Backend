@@ -28,7 +28,9 @@ namespace MySelfLog.Adapter
             try
             {
                 Subscribe();
-                Log.Info("Log EndPoint started");
+                Log.Info($"Listening from '{InputStream}' stream");
+                Log.Info($"Joined '{PersistentSubscriptionGroup}' group");
+                Log.Info($"Log EndPoint started");
                 return true;
             }
             catch (Exception ex)

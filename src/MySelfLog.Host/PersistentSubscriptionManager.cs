@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 
@@ -29,7 +25,7 @@ namespace MySelfLog.Host
                     PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
                     new UserCredentials(_configuration.UserName, _configuration.Password)).Wait();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Already exist
             }
