@@ -1,16 +1,28 @@
+sudo: true
 language: csharp
 solution: MySelfLog.Backend.sln
-# script:
-#   - xbuild /p:Configuration=Debug src/Evento.sln
-# before_install:
-#   - sudo apt-get install nunit-console
-# before_script:
-#   - nuget restore src/Evento.sln
-# after_script:
-#   - nunit-console src/Infrastructure.Tests/bin/Release/Infrastructure.Tests.dll
 install:
   - nuget restore src/MySelfLog.Backend.sln
   - nuget install NUnit.ConsoleRunner -Version 3.6.0 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release src/MySelfLog.Backend.sln
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.0/tools/nunit3-console.exe src/Tests/bin/Release/Tests.dll
+services:
+  - docker
+env:
+  global:  
+    - COMMIT=${TRAVIS_COMMIT::8}  
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - export REPO=$DOCKER_USER/k-auth
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - echo $REPO:$TAG:$COMMIT
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
+#after_success:
+#  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+#    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+#    docker push riccardone/myselflog-backend;
+#    fi  
