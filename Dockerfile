@@ -1,4 +1,4 @@
 FROM mono:latest
 
-ADD MySelfLog.Host/bin/Debug .
+ADD src/MySelfLog.Host/bin/Release .
 CMD [ "mono",  "MySelfLog.Host.exe" ]

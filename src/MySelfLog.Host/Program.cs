@@ -16,6 +16,7 @@ namespace MySelfLog.Host
             {
                 x.UseLinuxIfAvailable();
                 x.UseLog4Net();
+                log4net.GlobalContext.Properties["Domain"] = "MySelfLog.Backend";
                 var esConfig = new EventStoreConfiguration();
                 x.Service<Adapter.EndPoint>(s =>
                 {
