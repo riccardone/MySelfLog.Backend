@@ -1,51 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 using Evento;
 using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
 
 namespace MySelfLog.Domain.Aggregates
 {
-    public class Diary : AggregateBase
+    public class Diary : AggregateBaseV2
     {
         public override string AggregateId => CorrelationId;
         private string CorrelationId { get; set; }
         private string SecurityLink { get; set; }
-        //private List<GlucoseValue> GlucoseValues { get; set; } 
 
         public Diary()
         {
-            //GlucoseValues = new List<GlucoseValue>();
-            RegisterTransition<DiaryCreated>(Apply);
-            RegisterTransition<SecurityLinkChanged>(Apply);
-            //RegisterTransition<GlucoseLogged>(Apply);
+            RegisterTransition<DiaryCreatedV1>(Apply);
+            RegisterTransition<DiaryCreatedV2>(Apply);
+            RegisterTransition<SecurityLinkChangedV1>(Apply);
+        }
+        public Diary(string securityLink, IDictionary<string, string> metadata) : this()
+        {
+            RaiseEvent(new DiaryCreatedV2(securityLink, metadata));
         }
 
-        //private void Apply(GlucoseLogged obj)
-        //{
-        //   GlucoseValues.Add(new GlucoseValue(obj.Value, obj.MmolValue, obj.Message, obj.LogDate));
-        //}
+        private void Apply(DiaryCreatedV2 obj)
+        {
+            CorrelationId = obj.Metadata["CorrelationId"];
+            SecurityLink = obj.SecurityLink;
+        }
 
-        private void Apply(SecurityLinkChanged obj)
+        private void Apply(SecurityLinkChangedV1 obj)
         {
             SecurityLink = obj.SecurityLink;
         }
 
-        private void Apply(DiaryCreated obj)
+        private void Apply(DiaryCreatedV1 obj)
         {
             CorrelationId = obj.CorrelationId;
             SecurityLink = obj.SecurityLink;
         }
 
-        public Diary(string correlationId, string securityLink) : this()
-        {
-            RaiseEvent(new DiaryCreated(correlationId, securityLink));
-        }
-
         public static Diary Create(CreateDiary cmd)
         {
-            Ensure.NotNullOrWhiteSpace(cmd.CorrelationId, nameof(cmd.CorrelationId));
+            Ensure.NotNull(cmd.Metadata, nameof(cmd.Metadata));
+            Ensure.NotNullOrWhiteSpace(cmd.Metadata["CorrelationId"], "CorrelationId");
 
-            return new Diary(cmd.CorrelationId, GetSecurityLink());
+            return new Diary(GetSecurityLink(), cmd.Metadata);
         }
 
         private static string GetSecurityLink()
@@ -56,42 +56,45 @@ namespace MySelfLog.Domain.Aggregates
         public void LogValue(LogValue log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["CorrelationId"], "CorrelationId");
             Ensure.Nonnegative(log.Value, nameof(log.Value));
-            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
 
             if (log.Value > 0 || log.MmolValue > 0)
-                RaiseEvent(new GlucoseLogged(log.Value, log.MmolValue, log.Message, log.LogDate));
+                RaiseEvent(new GlucoseLoggedV2(log.Value, log.MmolValue, log.Message, log.Metadata));
         }
 
         public void LogTerapy(LogTerapy log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["CorrelationId"], "CorrelationId");
             Ensure.Nonnegative(log.FastTerapy, nameof(log.FastTerapy));
             Ensure.Nonnegative(log.SlowTerapy, nameof(log.SlowTerapy));
-            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
 
             if (log.FastTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, log.LogDate, false));
+                RaiseEvent(new TerapyLoggedV2(log.FastTerapy, log.Message, false, log.Metadata));
             if (log.SlowTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.SlowTerapy, log.Message, log.LogDate, true));
+                RaiseEvent(new TerapyLoggedV2(log.SlowTerapy, log.Message, true, log.Metadata));
         }
+
+        
 
         public void LogFood(LogFood log)
         {
             Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.CorrelationId, nameof(log.CorrelationId));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["CorrelationId"], "CorrelationId");
             Ensure.Nonnegative(log.Calories, nameof(log.Calories));
-            Ensure.NonLessThan50Years(log.LogDate, nameof(log.LogDate));
+            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
 
             if (log.Calories > 0)
-                RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.LogDate));
+                RaiseEvent(new FoodLoggedV2(log.Calories, log.FoodTypes, log.Message, log.Metadata));
         }
 
         public void ChangeSecurityLink()
         {
-            RaiseEvent(new SecurityLinkChanged(GetSecurityLink()));
+            RaiseEvent(new SecurityLinkChangedV2(GetSecurityLink(),
+                new Dictionary<string, string> {{"CorrelationId", CorrelationId}}));
         }
     }
 }

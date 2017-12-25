@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Evento;
 
-namespace MySelfLog.Domain.Aggregates
+namespace MySelfLog.Domain.Events
 {
-    public class GlucoseValue
+    public class GlucoseLoggedV1 : Event
     {
         public int Value { get; }
         public decimal MmolValue { get; }
         public string Message { get; }
         public DateTime LogDate { get; }
-
-        public GlucoseValue(int value, decimal mmolValue, string message, DateTime logDate)
+        public GlucoseLoggedV1(int value, decimal mmolValue, string message, DateTime logDate)
         {
             Value = value;
             MmolValue = mmolValue;

@@ -1,5 +1,4 @@
-﻿using Evento;
-using MySelfLog.Domain.Commands;
+﻿using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.Adapter.Mappings
 {

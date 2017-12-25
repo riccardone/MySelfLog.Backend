@@ -1,23 +1,20 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class LogTerapy : Command
+    public class LogTerapy : CommandV2
     {
-        public string CorrelationId { get; }
         public string Message { get; }
-        public DateTime LogDate { get; }
         public int SlowTerapy { get; }
         public int FastTerapy { get; }
-
-        public LogTerapy(string correlationId, string message, DateTime logDate, int slowTerapy, int fastTerapy)
+        public IDictionary<string, string> Metadata { get; }
+        public LogTerapy(string message, int slowTerapy, int fastTerapy, IDictionary<string, string> metadata)
         {
-            CorrelationId = correlationId;
             Message = message;
-            LogDate = logDate;
             SlowTerapy = slowTerapy;
             FastTerapy = fastTerapy;
+            Metadata = metadata;
         }
     }
 }

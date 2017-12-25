@@ -1,19 +1,18 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class CreateDiary : Command
+    public class CreateDiary : CommandV2
     {
-        public string CorrelationId { get; }
         public string Name { get; }
         public string Email { get; }
-
-        public CreateDiary(string correlationId, string name, string email)
+        public IDictionary<string, string> Metadata { get; }
+        public CreateDiary(string name, string email, IDictionary<string, string> metadata)
         {
-            CorrelationId = correlationId;
             Name = name;
             Email = email;
+            Metadata = metadata;
         }
     }
 }

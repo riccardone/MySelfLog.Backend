@@ -1,23 +1,20 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class LogValue : Command
+    public class LogValue : CommandV2
     {
-        public string CorrelationId { get; }
         public string Message { get; }
         public int Value { get; }
         public decimal MmolValue { get; }
-        public DateTime LogDate { get; }
-
-        public LogValue(string correlationId, int value, decimal mmolValue, string message, DateTime logDate)
+        public IDictionary<string, string> Metadata { get; }
+        public LogValue(int value, decimal mmolValue, string message, IDictionary<string, string> metadata)
         {
-            CorrelationId = correlationId;
             Value = value;
             MmolValue = mmolValue;
             Message = message;
-            LogDate = logDate;
+            Metadata = metadata;
         }
     }
 }

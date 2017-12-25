@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.Adapter.Mappings
@@ -18,22 +20,32 @@ namespace MySelfLog.Adapter.Mappings
 
         public CreateDiary BuildCreateDiary()
         {
-            return new CreateDiary(CorrelationId, string.Empty, string.Empty);
+            return new CreateDiary(string.Empty, string.Empty, GetMetadata());
         }
 
         public LogFood BuildLogFood()
         {
-            return new LogFood(CorrelationId, Comment, Applies, Calories, string.Empty);
+            return new LogFood(Comment, Calories, string.Empty, GetMetadata());
+        }
+
+        private IDictionary<string, string> GetMetadata()
+        {
+            return new Dictionary<string, string>
+            {
+                {"CorrelationId", CorrelationId},
+                {"Applies", Applies.ToString(CultureInfo.InvariantCulture)},
+                {"Reverses", Reverses}
+            };
         }
 
         public LogTerapy BuildLogTerapy()
         {
-            return new LogTerapy(CorrelationId, Comment, Applies, SlowTerapy, FastTerapy);
+            return new LogTerapy(Comment, SlowTerapy, FastTerapy, GetMetadata());
         }
 
         public LogValue BuildLogValue()
         {
-            return new LogValue(CorrelationId, Value, MmolValue, Comment, Applies);
+            return new LogValue(Value, MmolValue, Comment, GetMetadata());
         }
     }
 }

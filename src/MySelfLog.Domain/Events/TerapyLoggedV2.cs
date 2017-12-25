@@ -1,21 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Events
 {
-    public class TerapyLogged : Event
+    public class TerapyLoggedV2 : EventV2
     {
         public int Value { get; }
         public string Message { get; }
-        public DateTime LogDate { get; }
         public bool IsSlow { get; }
-
-        public TerapyLogged(int value, string message, DateTime logDate, bool isSlow)
+        public IDictionary<string, string> Metadata { get; }
+        public TerapyLoggedV2(int value, string message, bool isSlow, IDictionary<string, string> metadata)
         {
             Value = value;
             Message = message;
-            LogDate = logDate;
             IsSlow = isSlow;
+            Metadata = metadata;
         }
     }
 }

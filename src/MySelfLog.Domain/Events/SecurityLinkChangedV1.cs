@@ -2,11 +2,10 @@
 
 namespace MySelfLog.Domain.Events
 {
-    public class SecurityLinkChanged : Event
+    public class SecurityLinkChangedV1 : Event
     {
         public string SecurityLink { get; }
-
-        public SecurityLinkChanged(string securityLink)
+        public SecurityLinkChangedV1(string securityLink)
         {
             SecurityLink = securityLink;
         }

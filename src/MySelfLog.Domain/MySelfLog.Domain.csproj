@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Evento, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Evento.3.0.0\lib\net40\Evento.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,21 +41,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregates\Diary.cs" />
-    <Compile Include="Aggregates\GlucoseValue.cs" />
     <Compile Include="Commands\CreateDiary.cs" />
     <Compile Include="Commands\LogTerapy.cs" />
     <Compile Include="Commands\LogFood.cs" />
     <Compile Include="Commands\LogValue.cs" />
     <Compile Include="Ensure.cs" />
-    <Compile Include="Events\DiaryCreated.cs" />
-    <Compile Include="Events\SecurityLinkChanged.cs" />
-    <Compile Include="Events\TerapyLogged.cs" />
-    <Compile Include="Events\FoodLogged.cs" />
-    <Compile Include="Events\GlucoseLogged.cs" />
+    <Compile Include="Events\DiaryCreatedV2.cs" />
+    <Compile Include="Events\DiaryCreatedV1.cs" />
+    <Compile Include="Events\FoodLoggedV2.cs" />
+    <Compile Include="Events\GlucoseLoggedV2.cs" />
+    <Compile Include="Events\SecurityLinkChangedV2.cs" />
+    <Compile Include="Events\SecurityLinkChangedV1.cs" />
+    <Compile Include="Events\TerapyLoggedV2.cs" />
+    <Compile Include="Events\TerapyLoggedV1.cs" />
+    <Compile Include="Events\FoodLoggedV1.cs" />
+    <Compile Include="Events\GlucoseLoggedV1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\..\..\Evento\src\Evento\Evento.csproj">
+      <Project>{8911cbb6-d578-49df-bfbe-a1819bce2293}</Project>
+      <Name>Evento</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
