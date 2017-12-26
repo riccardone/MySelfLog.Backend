@@ -3,11 +3,11 @@ using Evento;
 
 namespace MySelfLog.Domain.Events
 {
-    public class DiaryCreated : Event
+    public class DiaryCreatedV1 : Event
     {
         public string SecurityLink { get; }
         public IDictionary<string, string> Metadata { get; }
-        public DiaryCreated(string securityLink, IDictionary<string, string> metadata)
+        public DiaryCreatedV1(string securityLink, IDictionary<string, string> metadata)
         {
             SecurityLink = securityLink;
             Metadata = metadata;

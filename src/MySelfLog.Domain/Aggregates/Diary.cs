@@ -14,21 +14,21 @@ namespace MySelfLog.Domain.Aggregates
 
         public Diary()
         {
-            RegisterTransition<DiaryCreated>(Apply);
-            RegisterTransition<SecurityLinkChanged>(Apply);
+            RegisterTransition<DiaryCreatedV1>(Apply);
+            RegisterTransition<SecurityLinkChangedV1>(Apply);
         }
         public Diary(string securityLink, IDictionary<string, string> metadata) : this()
         {
-            RaiseEvent(new DiaryCreated(securityLink, metadata));
+            RaiseEvent(new DiaryCreatedV1(securityLink, metadata));
         }
 
-        private void Apply(DiaryCreated obj)
+        private void Apply(DiaryCreatedV1 obj)
         {
             CorrelationId = obj.Metadata["$correlationId"];
             SecurityLink = obj.SecurityLink;
         }
 
-        private void Apply(SecurityLinkChanged obj)
+        private void Apply(SecurityLinkChangedV1 obj)
         {
             SecurityLink = obj.SecurityLink;
         }
@@ -54,7 +54,7 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.Value > 0 || log.MmolValue > 0)
-                RaiseEvent(new GlucoseLogged(log.Value, log.MmolValue, log.Message, log.Metadata));
+                RaiseEvent(new GlucoseLoggedV1(log.Value, log.MmolValue, log.Message, log.Metadata));
         }
 
         public void LogTerapy(LogTerapy log)
@@ -67,9 +67,9 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.FastTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.FastTerapy, log.Message, false, log.Metadata));
+                RaiseEvent(new TerapyLoggedV1(log.FastTerapy, log.Message, false, log.Metadata));
             if (log.SlowTerapy > 0)
-                RaiseEvent(new TerapyLogged(log.SlowTerapy, log.Message, true, log.Metadata));
+                RaiseEvent(new TerapyLoggedV1(log.SlowTerapy, log.Message, true, log.Metadata));
         }
 
         
@@ -83,12 +83,12 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.Calories > 0)
-                RaiseEvent(new FoodLogged(log.Calories, log.FoodTypes, log.Message, log.Metadata));
+                RaiseEvent(new FoodLoggedV1(log.Calories, log.FoodTypes, log.Message, log.Metadata));
         }
 
         public void ChangeSecurityLink()
         {
-            RaiseEvent(new SecurityLinkChanged(GetSecurityLink(),
+            RaiseEvent(new SecurityLinkChangedV1(GetSecurityLink(),
                 new Dictionary<string, string> {{"$correlationId", CorrelationId}}));
         }
     }

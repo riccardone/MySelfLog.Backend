@@ -3,13 +3,13 @@ using Evento;
 
 namespace MySelfLog.Domain.Events
 {
-    public class GlucoseLogged : Event
+    public class GlucoseLoggedV1 : Event
     {
         public int Value { get; }
         public decimal MmolValue { get; }
         public string Message { get; }
         public IDictionary<string, string> Metadata { get; }
-        public GlucoseLogged(int value, decimal mmolValue, string message, IDictionary<string, string> metadata)
+        public GlucoseLoggedV1(int value, decimal mmolValue, string message, IDictionary<string, string> metadata)
         {
             Value = value;
             MmolValue = mmolValue;
