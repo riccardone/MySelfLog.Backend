@@ -3,7 +3,7 @@ using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class LogTerapy : CommandV2
+    public class LogTerapy : Command
     {
         public string Message { get; }
         public int SlowTerapy { get; }

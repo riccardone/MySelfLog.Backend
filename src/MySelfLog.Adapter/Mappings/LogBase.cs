@@ -28,16 +28,6 @@ namespace MySelfLog.Adapter.Mappings
             return new LogFood(Comment, Calories, string.Empty, GetMetadata());
         }
 
-        private IDictionary<string, string> GetMetadata()
-        {
-            return new Dictionary<string, string>
-            {
-                {"CorrelationId", CorrelationId},
-                {"Applies", Applies.ToString(CultureInfo.InvariantCulture)},
-                {"Reverses", Reverses}
-            };
-        }
-
         public LogTerapy BuildLogTerapy()
         {
             return new LogTerapy(Comment, SlowTerapy, FastTerapy, GetMetadata());
@@ -46,6 +36,16 @@ namespace MySelfLog.Adapter.Mappings
         public LogValue BuildLogValue()
         {
             return new LogValue(Value, MmolValue, Comment, GetMetadata());
+        }
+        private IDictionary<string, string> GetMetadata()
+        {
+            return new Dictionary<string, string>
+            {
+                {"$correlationId", CorrelationId},
+                {"Applies", Applies.ToString(CultureInfo.InvariantCulture)},
+                {"Reverses", Reverses},
+                {"Source", Source}
+            };
         }
     }
 }

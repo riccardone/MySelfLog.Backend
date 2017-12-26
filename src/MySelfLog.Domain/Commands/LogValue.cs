@@ -3,7 +3,7 @@ using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class LogValue : CommandV2
+    public class LogValue : Command
     {
         public string Message { get; }
         public int Value { get; }

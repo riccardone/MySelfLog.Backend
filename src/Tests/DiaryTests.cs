@@ -34,7 +34,7 @@ namespace Tests
             aggregate.LogValue(logGlucose);
 
             // Verify
-            Assert.IsTrue(((GlucoseLoggedV2)aggregate.UncommitedEvents().Last()).Value.Equals(100));
+            Assert.IsTrue(((GlucoseLogged)aggregate.UncommitedEvents().Last()).Value.Equals(100));
         }
     }
 }

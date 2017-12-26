@@ -30,6 +30,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Evento, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Evento.4.0.0\lib\net40\Evento.dll</HintPath>
+    </Reference>
+    <Reference Include="Evento.Repository, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Evento.Repository.4.0.0\lib\net461\Evento.Repository.dll</HintPath>
+    </Reference>
+    <Reference Include="EventStore.ClientAPI, Version=4.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EventStore.Client.4.0.3\lib\net40\EventStore.ClientAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -50,10 +62,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Evento\src\Evento\Evento.csproj">
-      <Project>{8911cbb6-d578-49df-bfbe-a1819bce2293}</Project>
-      <Name>Evento</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MySelfLog.Adapter\MySelfLog.Adapter.csproj">
       <Project>{958d7c78-f01a-498a-a953-6d7ce8c49504}</Project>
       <Name>MySelfLog.Adapter</Name>

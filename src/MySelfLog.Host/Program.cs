@@ -30,7 +30,7 @@ namespace MySelfLog.Host
                     subscriptionManager.CreateSubscription();
                     s.ConstructUsing(
                         name =>
-                            new Adapter.EndPoint(new EventStoreDomainRepositoryV2("domain", domainConnection),
+                            new Adapter.EndPoint(new EventStoreDomainRepository("domain", domainConnection),
                                 endpointConnection));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());

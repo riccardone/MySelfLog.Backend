@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Events
 {
-    public class GlucoseLoggedV2 : EventV2
+    public class TerapyLogged : Event
     {
         public int Value { get; }
-        public decimal MmolValue { get; }
         public string Message { get; }
+        public bool IsSlow { get; }
         public IDictionary<string, string> Metadata { get; }
-        public GlucoseLoggedV2(int value, decimal mmolValue, string message, IDictionary<string, string> metadata)
+        public TerapyLogged(int value, string message, bool isSlow, IDictionary<string, string> metadata)
         {
             Value = value;
-            MmolValue = mmolValue;
             Message = message;
+            IsSlow = isSlow;
             Metadata = metadata;
         }
     }

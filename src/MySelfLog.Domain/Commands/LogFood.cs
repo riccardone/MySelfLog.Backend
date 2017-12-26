@@ -4,7 +4,7 @@ using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class LogFood : CommandV2
+    public class LogFood : Command
     {
         public string Message { get; }
         public int Calories { get; }

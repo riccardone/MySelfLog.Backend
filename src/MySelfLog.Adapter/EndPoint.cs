@@ -12,12 +12,12 @@ namespace MySelfLog.Adapter
     public class EndPoint
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(EndPoint));
-        private readonly IDomainRepositoryV2 _domainRepository;
+        private readonly IDomainRepository _domainRepository;
         private readonly IEventStoreConnection _connection;
         private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
 
-        public EndPoint(IDomainRepositoryV2 domainRepository, IEventStoreConnection connection)
+        public EndPoint(IDomainRepository domainRepository, IEventStoreConnection connection)
         {
             _domainRepository = domainRepository;
             _connection = connection;

@@ -3,7 +3,7 @@ using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
-    public class CreateDiary : CommandV2
+    public class CreateDiary : Command
     {
         public string Name { get; }
         public string Email { get; }
