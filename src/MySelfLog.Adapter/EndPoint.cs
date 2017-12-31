@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Evento;
@@ -6,6 +7,7 @@ using EventStore.ClientAPI;
 using log4net;
 using MySelfLog.Adapter.Mappings;
 using MySelfLog.Domain.Aggregates;
+using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.Adapter
 {
@@ -16,9 +18,11 @@ namespace MySelfLog.Adapter
         private readonly IEventStoreConnection _connection;
         private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
+        private readonly Dictionary<string, Func<string[], LogBase>> _deserialisers;
 
         public EndPoint(IDomainRepository domainRepository, IEventStoreConnection connection)
         {
+            _deserialisers = CreateDeserialisersMapping();
             _domainRepository = domainRepository;
             _connection = connection;
         }
@@ -56,22 +60,7 @@ namespace MySelfLog.Adapter
                 var e = resolvedEvent.Event;
                 var eventJson = Encoding.UTF8.GetString(e.Data);
                 var metadataJson = Encoding.UTF8.GetString(e.Metadata);
-                var log = new LogFromJson(eventJson, metadataJson);
-                Diary aggregate;
-                try
-                {
-                    aggregate = _domainRepository.GetById<Diary>(log.CorrelationId);
-                }
-                catch (AggregateNotFoundException)
-                {
-                    aggregate = Diary.Create(log.BuildCreateDiary());
-                }
-                aggregate.LogValue(log.BuildLogValue());
-                aggregate.LogTerapy(log.BuildLogTerapy());
-                aggregate.LogFood(log.BuildLogFood());
-                _domainRepository.Save(aggregate);
-
-                Log.Info($"'{e.EventType}' handled with CorrelationId '{aggregate.AggregateId}'");
+                Process(e.EventType, metadataJson, eventJson);
             }
             catch (Exception ex)
             {
@@ -82,9 +71,57 @@ namespace MySelfLog.Adapter
             return Task.CompletedTask;
         }
 
+        private void Process(string eventType, string metadataJson, string eventJson)
+        {
+            var logBase = _deserialisers[eventType](new[] {metadataJson, eventJson});
+            Diary aggregate;
+            try
+            {
+                aggregate = _domainRepository.GetById<Diary>(logBase.GetMetadata()["$correlationId"], 5);
+            }
+            catch (AggregateNotFoundException)
+            {
+                aggregate = Diary.Create(logBase.BuildCreateDiary());
+            }
+            aggregate.LogValue(logBase.BuildLogValue());
+            aggregate.LogTerapy(logBase.BuildLogTerapy());
+            aggregate.LogFood(logBase.BuildLogFood());
+            _domainRepository.Save(aggregate);
+
+            Log.Debug($"'{eventType}' handled with CorrelationId '{aggregate.AggregateId}'");
+        }
+
         private void SubscriptionDropped(EventStorePersistentSubscriptionBase eventStorePersistentSubscriptionBase, SubscriptionDropReason subscriptionDropReason, Exception arg3)
         {
             Log.Error(subscriptionDropReason.ToString(), arg3);
+        }
+
+        private static Dictionary<string, Func<string[], LogBase>> CreateDeserialisersMapping()
+        {
+            return new Dictionary<string, Func<string[], LogBase>>
+            {
+                {"MySelfLogValueReceived", ToLogFromJson},
+                {"OldCaloriesReceived", ToCaloriesFromOldDiaryJson},
+                {"OldTerapyReceived", ToImportTerapyFromOldDiary},
+                {"OldGlucoseValueReceived", ToGlucoseValueFromOldDiaryJson},
+            };
+        }
+
+        private static LogBase ToImportTerapyFromOldDiary(string[] arg)
+        {
+            return new ImportTerapyFromOldDiary(arg[1], arg[0]);
+        }
+        private static LogBase ToCaloriesFromOldDiaryJson(string[] arg)
+        {
+            return new ImportCaloriesFromOldDiary(arg[1], arg[0]);
+        }
+        private static LogBase ToGlucoseValueFromOldDiaryJson(string[] arg)
+        {
+            return new ImportGlucoseValueFromOldDiary(arg[1], arg[0]);
+        }
+        private static LogBase ToLogFromJson(string[] arg)
+        {
+            return new LogFromJson(arg[1], arg[0]);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace MySelfLog.Adapter.Mappings
         public string Comment { get; protected set; }
         public string CorrelationId { get; protected set; }
         public string Source { get; protected set; }
-        public DateTime Applies { get; protected set; }
+        public DateTime? Applies { get; protected set; }
         public string Reverses { get; protected set; }
 
         public CreateDiary BuildCreateDiary()
@@ -37,15 +37,23 @@ namespace MySelfLog.Adapter.Mappings
         {
             return new LogValue(Value, MmolValue, Comment, GetMetadata());
         }
-        private IDictionary<string, string> GetMetadata()
+        public IDictionary<string, string> GetMetadata()
         {
-            return new Dictionary<string, string>
+            var metadata = new Dictionary<string, string>
             {
-                {"$correlationId", CorrelationId},
-                {"Applies", Applies.ToString(CultureInfo.InvariantCulture)},
-                {"Reverses", Reverses},
-                {"Source", Source}
+                {"$correlationId", CorrelationId}
             };
+
+            if (Applies.HasValue)
+                metadata.Add("Applies", Applies.Value.ToString(CultureInfo.InvariantCulture));
+
+            if (!string.IsNullOrWhiteSpace(Reverses))
+                metadata.Add("Reverses", Reverses);
+
+            if (!string.IsNullOrWhiteSpace(Source))
+                metadata.Add("Source", Source);
+
+            return metadata;
         }
     }
 }

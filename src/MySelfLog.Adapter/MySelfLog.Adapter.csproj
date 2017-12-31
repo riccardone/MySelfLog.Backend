@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Evento, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Evento.4.0.0\lib\net40\Evento.dll</HintPath>
+      <HintPath>..\packages\Evento.4.0.2\lib\net40\Evento.dll</HintPath>
     </Reference>
     <Reference Include="EventStore.ClientAPI, Version=4.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EventStore.Client.4.0.3\lib\net40\EventStore.ClientAPI.dll</HintPath>
@@ -53,8 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mappings\ICommandFactory.cs" />
+    <Compile Include="Mappings\ImportCaloriesFromOldDiary.cs" />
+    <Compile Include="Mappings\ImportGlucoseValueFromOldDiary.cs" />
     <Compile Include="Mappings\LogBase.cs" />
     <Compile Include="EndPoint.cs" />
+    <Compile Include="Mappings\ImportTerapyFromOldDiary.cs" />
     <Compile Include="Mappings\LogFromJson.cs" />
     <Compile Include="Mappings\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
