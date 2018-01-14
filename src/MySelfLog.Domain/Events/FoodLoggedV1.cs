@@ -1,21 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Events
 {
-    public class FoodLogged : Event
+    public class FoodLoggedV1 : Event
     {
         public string Message { get; }
-        public DateTime LogDate { get; }
         public int Calories { get; }
         public string FoodTypes { get; }
-
-        public FoodLogged(int calories, string foodTypes, string message, DateTime logDate)
+        public IDictionary<string, string> Metadata { get; }
+        public FoodLoggedV1(int calories, string foodTypes, string message, IDictionary<string, string> metadata)
         {
             Calories = calories;
             FoodTypes = foodTypes;
             Message = message;
-            LogDate = logDate;
+            Metadata = metadata;
         }
     }
 }

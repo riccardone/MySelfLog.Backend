@@ -1,23 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using Evento;
 
 namespace MySelfLog.Domain.Commands
 {
     public class LogFood : Command
     {
-        public string CorrelationId { get; }
         public string Message { get; }
-        public DateTime LogDate { get; }
         public int Calories { get; }
         public string FoodTypes { get; }
-
-        public LogFood(string correlationId, string message, DateTime logDate, int calories, string foodTypes)
+        public IDictionary<string, string> Metadata { get; }
+        public LogFood(string message, int calories, string foodTypes, IDictionary<string, string> metadata)
         {
-            CorrelationId = correlationId;
             Message = message;
-            LogDate = logDate;
             Calories = calories;
             FoodTypes = foodTypes;
+            Metadata = metadata;
         }
     }
 }

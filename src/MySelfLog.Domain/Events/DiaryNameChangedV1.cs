@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Evento;
 
-namespace MySelfLog.Domain.Commands
+namespace MySelfLog.Domain.Events
 {
-    public class CreateDiary : Command
+    public class DiaryNameChangedV1 : Event
     {
         public string Name { get; }
         public IDictionary<string, string> Metadata { get; }
-        public CreateDiary(string name, IDictionary<string, string> metadata)
+        public DiaryNameChangedV1(string name, IDictionary<string, string> metadata)
         {
             Name = name;
             Metadata = metadata;

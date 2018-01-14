@@ -1,5 +1,4 @@
-﻿using Evento;
-using MySelfLog.Domain.Commands;
+﻿using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.Adapter.Mappings
 {
@@ -9,5 +8,6 @@ namespace MySelfLog.Adapter.Mappings
         LogFood BuildLogFood();
         LogTerapy BuildLogTerapy();
         LogValue BuildLogValue();
+        ChangeDiaryName BuildChangeDiaryNameValue();
     }
 }
