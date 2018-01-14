@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregates\Diary.cs" />
+    <Compile Include="Commands\ChangeDiaryName.cs" />
     <Compile Include="Commands\CreateDiary.cs" />
+    <Compile Include="Commands\Log.cs" />
     <Compile Include="Commands\LogTerapy.cs" />
     <Compile Include="Commands\LogFood.cs" />
     <Compile Include="Commands\LogValue.cs" />
@@ -52,7 +54,7 @@
     <Compile Include="Events\DiaryCreatedV1.cs" />
     <Compile Include="Events\FoodLoggedV1.cs" />
     <Compile Include="Events\GlucoseLoggedV1.cs" />
-    <Compile Include="Events\SecurityLinkChangedV1.cs" />
+    <Compile Include="Events\DiaryNameChangedV1.cs" />
     <Compile Include="Events\TerapyLoggedV1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

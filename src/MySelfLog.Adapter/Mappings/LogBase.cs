@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using MySelfLog.Domain.Commands;
 
 namespace MySelfLog.Adapter.Mappings
@@ -13,14 +11,34 @@ namespace MySelfLog.Adapter.Mappings
         public int FastTerapy { get; protected set; }
         public int Calories { get; protected set; }
         public string Comment { get; protected set; }
-        public string CorrelationId { get; protected set; }
-        public string Source { get; protected set; }
-        public DateTime? Applies { get; protected set; }
-        public string Reverses { get; protected set; }
+        public IDictionary<string, string> Metadata { get; protected set; }
+        public string DiaryName { get; protected set; }
+
+        public LogBase()
+        {
+            
+        }
+
+        public LogBase(int value, int mmolValue, int slowTerapy, int fastTerapy, int calories, string comment,
+            IDictionary<string, string> metadata)
+        {
+            Value = value;
+            MmolValue = mmolValue;
+            SlowTerapy = slowTerapy;
+            FastTerapy = fastTerapy;
+            Calories = calories;
+            Comment = comment;
+            Metadata = metadata;
+        }
 
         public CreateDiary BuildCreateDiary()
         {
-            return new CreateDiary(string.Empty, string.Empty, GetMetadata());
+            return new CreateDiary(DiaryName, GetMetadata());
+        }
+
+        public Log BuildLog()
+        {
+            return new Log(Value, MmolValue, SlowTerapy, FastTerapy, Calories, Comment, Metadata);
         }
 
         public LogFood BuildLogFood()
@@ -37,23 +55,15 @@ namespace MySelfLog.Adapter.Mappings
         {
             return new LogValue(Value, MmolValue, Comment, GetMetadata());
         }
-        public IDictionary<string, string> GetMetadata()
+
+        public ChangeDiaryName BuildChangeDiaryNameValue()
         {
-            var metadata = new Dictionary<string, string>
-            {
-                {"$correlationId", CorrelationId}
-            };
+            return new ChangeDiaryName(DiaryName, Metadata);
+        }
 
-            if (Applies.HasValue)
-                metadata.Add("Applies", Applies.Value.ToString(CultureInfo.InvariantCulture));
-
-            if (!string.IsNullOrWhiteSpace(Reverses))
-                metadata.Add("Reverses", Reverses);
-
-            if (!string.IsNullOrWhiteSpace(Source))
-                metadata.Add("Source", Source);
-
-            return metadata;
+        private IDictionary<string, string> GetMetadata()
+        {
+            return Metadata;
         }
     }
 }

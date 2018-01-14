@@ -3,16 +3,14 @@ using Newtonsoft.Json;
 
 namespace MySelfLog.Adapter.Mappings
 {
-    public class ImportGlucoseValueFromOldDiary : LogBase
+    public class ChangeDiaryNameFromJson : LogBase
     {
-        public ImportGlucoseValueFromOldDiary(string bodyAsJson, string metadataAsJson)
+        public ChangeDiaryNameFromJson(string bodyAsJson, string metadataAsJson)
         {
             var body = JsonConvert.DeserializeObject<dynamic>(bodyAsJson);
             var metadata = JsonConvert.DeserializeObject<IDictionary<string, string>>(metadataAsJson);
-            
-            Value = int.Parse(body.Value.ToString());
-            if (!metadata.ContainsKey("Source"))
-                metadata["Source"] = "MySelfLog-OldDiary";
+           
+            DiaryName = body.diaryName.Value;
             Metadata = metadata;
         }
     }

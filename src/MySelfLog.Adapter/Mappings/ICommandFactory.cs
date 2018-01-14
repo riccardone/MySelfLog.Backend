@@ -8,5 +8,6 @@ namespace MySelfLog.Adapter.Mappings
         LogFood BuildLogFood();
         LogTerapy BuildLogTerapy();
         LogValue BuildLogValue();
+        ChangeDiaryName BuildChangeDiaryNameValue();
     }
 }

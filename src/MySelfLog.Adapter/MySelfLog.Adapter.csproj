@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers.cs" />
+    <Compile Include="Mappings\ChangeDiaryNameFromJson.cs" />
+    <Compile Include="Mappings\CreateDiaryFromJson.cs" />
     <Compile Include="Mappings\ICommandFactory.cs" />
     <Compile Include="Mappings\ImportCaloriesFromOldDiary.cs" />
     <Compile Include="Mappings\ImportGlucoseValueFromOldDiary.cs" />
@@ -59,7 +62,6 @@
     <Compile Include="EndPoint.cs" />
     <Compile Include="Mappings\ImportTerapyFromOldDiary.cs" />
     <Compile Include="Mappings\LogFromJson.cs" />
-    <Compile Include="Mappings\Metadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

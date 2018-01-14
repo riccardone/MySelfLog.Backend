@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace MySelfLog.Adapter.Mappings
@@ -8,12 +9,12 @@ namespace MySelfLog.Adapter.Mappings
         public ImportCaloriesFromOldDiary(string bodyAsJson, string metadataAsJson)
         {
             var body = JsonConvert.DeserializeObject<dynamic>(bodyAsJson);
-            var metadata = JsonConvert.DeserializeObject<Metadata>(metadataAsJson);
-            
-            Applies = DateTime.Parse(body.LogDate.ToString());
+            var metadata = JsonConvert.DeserializeObject<IDictionary<string, string>>(metadataAsJson);
+           
             Calories = int.Parse(body.Calories.ToString());
-            CorrelationId = metadata.CorrelationId; 
-            Source = "MySelfLog-OldDiary";
+            if (!metadata.ContainsKey("Source"))
+                metadata["Source"] = "MySelfLog-OldDiary";
+            Metadata = metadata;
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Evento;
 using MySelfLog.Domain.Aggregates;
 using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
@@ -17,16 +16,19 @@ namespace Tests
         public void LogGlucose()
         {
             // Set up
-            var cmd = new CreateDiary(string.Empty, string.Empty,
+            var cmd = new CreateDiary("test", 
                 new Dictionary<string, string>
                 {
-                    {"", "123"},
-                    {"Applies", DateTime.Now.ToString(CultureInfo.InvariantCulture)}
+                    {"$correlationId", "123"},
+                    {"Applies", DateTime.Now.ToString(CultureInfo.InvariantCulture)},
+                    {"Source", "test"},
+                    {"Email", "test@test.com"}
                 });
             var logGlucose = new LogValue(100, 0, "test", new Dictionary<string, string>
             {
-                {"", "123"},
-                {"Applies", DateTime.Now.ToString(CultureInfo.InvariantCulture)}
+                {"$correlationId", "123"},
+                {"Applies", DateTime.Now.ToString(CultureInfo.InvariantCulture)},
+                {"Source", "test"}
             });
 
             // Act

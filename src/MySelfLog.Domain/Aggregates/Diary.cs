@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Evento;
 using MySelfLog.Domain.Commands;
 using MySelfLog.Domain.Events;
@@ -10,48 +9,38 @@ namespace MySelfLog.Domain.Aggregates
     {
         public override string AggregateId => CorrelationId;
         private string CorrelationId { get; set; }
-        private string SecurityLink { get; set; }
-
+        private string Name { get; set; }
         public Diary()
         {
             RegisterTransition<DiaryCreatedV1>(Apply);
-            RegisterTransition<SecurityLinkChangedV1>(Apply);
+            RegisterTransition<DiaryNameChangedV1>(Apply);
         }
-        public Diary(string securityLink, IDictionary<string, string> metadata) : this()
+        public Diary(string name, IDictionary<string, string> metadata) : this()
         {
-            RaiseEvent(new DiaryCreatedV1(securityLink, metadata));
+            RaiseEvent(new DiaryCreatedV1(name, metadata));
         }
 
         private void Apply(DiaryCreatedV1 obj)
         {
             CorrelationId = obj.Metadata["$correlationId"];
-            SecurityLink = obj.SecurityLink;
+            Name = obj.Name;
         }
 
-        private void Apply(SecurityLinkChangedV1 obj)
+        private void Apply(DiaryNameChangedV1 obj)
         {
-            SecurityLink = obj.SecurityLink;
+            Name = obj.Name;
         }
         public static Diary Create(CreateDiary cmd)
         {
-            Ensure.NotNull(cmd.Metadata, nameof(cmd.Metadata));
-            Ensure.NotNullOrWhiteSpace(cmd.Metadata["$correlationId"], "$correlationId");
+            ValidateRequiredMetadata(cmd);
 
-            return new Diary(GetSecurityLink(), cmd.Metadata);
-        }
-
-        private static string GetSecurityLink()
-        {
-            return Guid.NewGuid().GetHashCode().ToString();
+            return new Diary(cmd.Name, cmd.Metadata);
         }
 
         public void LogValue(LogValue log)
         {
-            Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["$correlationId"], "$correlationId");
+            ValidateRequiredMetadata(log);
             Ensure.Nonnegative(log.Value, nameof(log.Value));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.Value > 0 || log.MmolValue > 0)
                 RaiseEvent(new GlucoseLoggedV1(log.Value, log.MmolValue, log.Message, log.Metadata));
@@ -59,12 +48,9 @@ namespace MySelfLog.Domain.Aggregates
 
         public void LogTerapy(LogTerapy log)
         {
-            Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["$correlationId"], "$correlationId");
+            ValidateRequiredMetadata(log);
             Ensure.Nonnegative(log.FastTerapy, nameof(log.FastTerapy));
             Ensure.Nonnegative(log.SlowTerapy, nameof(log.SlowTerapy));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.FastTerapy > 0)
                 RaiseEvent(new TerapyLoggedV1(log.FastTerapy, log.Message, false, log.Metadata));
@@ -72,24 +58,32 @@ namespace MySelfLog.Domain.Aggregates
                 RaiseEvent(new TerapyLoggedV1(log.SlowTerapy, log.Message, true, log.Metadata));
         }
 
-        
-
         public void LogFood(LogFood log)
         {
-            Ensure.NotNull(log, nameof(log));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["$correlationId"], "$correlationId");
+            ValidateRequiredMetadata(log);
             Ensure.Nonnegative(log.Calories, nameof(log.Calories));
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Applies"], "Applies");
-            Ensure.NotNullOrWhiteSpace(log.Metadata["Source"], "Source");
 
             if (log.Calories > 0)
                 RaiseEvent(new FoodLoggedV1(log.Calories, log.FoodTypes, log.Message, log.Metadata));
         }
 
-        public void ChangeSecurityLink()
+        public void ChangeDiaryName(ChangeDiaryName cmd)
         {
-            RaiseEvent(new SecurityLinkChangedV1(GetSecurityLink(),
-                new Dictionary<string, string> {{"$correlationId", CorrelationId}}));
+            ValidateRequiredMetadata(cmd);
+            Ensure.NotNull(cmd.Name, nameof(cmd.Name));
+
+            if (cmd.Name.Equals(Name))
+                return;
+
+            RaiseEvent(new DiaryNameChangedV1(cmd.Name, cmd.Metadata));
+        }
+
+        private static void ValidateRequiredMetadata(Message msg)
+        {
+            Ensure.NotNull(msg.Metadata, nameof(msg.Metadata));
+            Ensure.NotNullOrWhiteSpace(msg.Metadata["$correlationId"], "$correlationId");
+            Ensure.NotNullOrWhiteSpace(msg.Metadata["Source"], "Source");
+            Ensure.NotNullOrWhiteSpace(msg.Metadata["Applies"], "Applies");
         }
     }
 }
