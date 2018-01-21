@@ -16,7 +16,7 @@ namespace MySelfLog.Adapter.Mappings
                 Calories = calories;
             if (int.TryParse(body.fastTerapy.Value.ToString(), out int fastTerapy))
                 FastTerapy = fastTerapy;
-            if (int.TryParse(body.mmolvalue.Value.ToString(), out int mmolValue))
+            if (decimal.TryParse(body.mmolvalue.Value.ToString(), out decimal mmolValue))
                 MmolValue = mmolValue;
             if (int.TryParse(body.slowTerapy.Value.ToString(), out int slowTerapy))
                 SlowTerapy = slowTerapy;

@@ -1,8 +1,10 @@
-﻿using Evento.Repository;
+﻿using System;
+using Evento.Repository;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using log4net.Config;
 using MySelfLog.Adapter;
+using MySelfLog.DiaryCache;
 using Topshelf;
 
 namespace MySelfLog.Host
@@ -29,7 +31,8 @@ namespace MySelfLog.Host
                     var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
                     subscriptionManager.CreateSubscription();
                     var repo = new EventStoreDomainRepository("domain", domainConnection);
-                    s.ConstructUsing(name => new Adapter.EndPoint(repo, endpointConnection, new Handlers(repo)));
+                    var diaryCache = new DiaryCacheService(new Uri("http://localhost:9200"));
+                    s.ConstructUsing(name => new Adapter.EndPoint(repo, endpointConnection, new Handlers(repo, diaryCache)));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());
                 });

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{958D7C78-F01A-498A-A953-6D7CE8C49504}</ProjectGuid>
+    <ProjectGuid>{B05BB5C2-4F2A-4BB4-B0F7-0F9D6D512663}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MySelfLog.Adapter</RootNamespace>
-    <AssemblyName>MySelfLog.Adapter</AssemblyName>
+    <RootNamespace>MySelfLog.DiaryCache</RootNamespace>
+    <AssemblyName>MySelfLog.DiaryCache</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,17 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Evento, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Evento.4.0.2\lib\net40\Evento.dll</HintPath>
+    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.5.6.0\lib\net46\Elasticsearch.Net.dll</HintPath>
     </Reference>
-    <Reference Include="EventStore.ClientAPI, Version=4.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\EventStore.Client.4.0.3\lib\net40\EventStore.ClientAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.5.6.0\lib\net46\Nest.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,27 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers.cs" />
-    <Compile Include="IDiaryCache.cs" />
-    <Compile Include="Mappings\ChangeDiaryNameFromJson.cs" />
-    <Compile Include="Mappings\CreateDiaryFromJson.cs" />
-    <Compile Include="Mappings\ICommandFactory.cs" />
-    <Compile Include="Mappings\ImportCaloriesFromOldDiary.cs" />
-    <Compile Include="Mappings\ImportGlucoseValueFromOldDiary.cs" />
-    <Compile Include="Mappings\LogBase.cs" />
-    <Compile Include="EndPoint.cs" />
-    <Compile Include="Mappings\ImportTerapyFromOldDiary.cs" />
-    <Compile Include="Mappings\LogFromJson.cs" />
+    <Compile Include="DiaryCacheService.cs" />
+    <Compile Include="DiaryEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\MySelfLog.Adapter\MySelfLog.Adapter.csproj">
+      <Project>{958D7C78-F01A-498A-A953-6D7CE8C49504}</Project>
+      <Name>MySelfLog.Adapter</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MySelfLog.Domain\MySelfLog.Domain.csproj">
-      <Project>{0c554817-240a-4895-91f9-6c4f4e2ce585}</Project>
-      <Name>MySelfLog.Domain</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
