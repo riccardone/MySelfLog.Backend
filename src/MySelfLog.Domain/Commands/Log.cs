@@ -5,7 +5,7 @@ namespace MySelfLog.Domain.Commands
 {
     public class Log : Command
     {
-        public Log(int value, int mmolValue, int slowTerapy, int fastTerapy, int calories, string comment,
+        public Log(int value, decimal mmolValue, int slowTerapy, int fastTerapy, int calories, string comment,
             IDictionary<string, string> metadata)
         {
             Value = value;
@@ -18,7 +18,7 @@ namespace MySelfLog.Domain.Commands
         }
 
         public int Value { get; }
-        public int MmolValue { get; }
+        public decimal MmolValue { get; }
         public int SlowTerapy { get; }
         public int FastTerapy { get; }
         public int Calories { get; }

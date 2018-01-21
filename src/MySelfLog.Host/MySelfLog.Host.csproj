@@ -113,6 +113,10 @@
       <Project>{958d7c78-f01a-498a-a953-6d7ce8c49504}</Project>
       <Name>MySelfLog.Adapter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MySelfLog.DiaryCache\MySelfLog.DiaryCache.csproj">
+      <Project>{b05bb5c2-4f2a-4bb4-b0f7-0f9d6d512663}</Project>
+      <Name>MySelfLog.DiaryCache</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

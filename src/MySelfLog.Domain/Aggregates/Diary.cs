@@ -41,6 +41,7 @@ namespace MySelfLog.Domain.Aggregates
         {
             ValidateRequiredMetadata(log);
             Ensure.Nonnegative(log.Value, nameof(log.Value));
+            Ensure.Nonnegative(log.MmolValue, nameof(log.MmolValue));
 
             if (log.Value > 0 || log.MmolValue > 0)
                 RaiseEvent(new GlucoseLoggedV1(log.Value, log.MmolValue, log.Message, log.Metadata));
