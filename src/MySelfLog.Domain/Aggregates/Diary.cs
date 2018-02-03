@@ -44,20 +44,24 @@ namespace MySelfLog.Domain.Aggregates
             Ensure.Nonnegative(log.Value, nameof(log.Value));
             Ensure.Nonnegative(log.MmolValue, nameof(log.MmolValue));
 
-            if (log.Value > 0 && log.Value < 20)
-                throw new Exception("warning: value is very low");
-            if (log.Value < 10)
-                throw new Exception("error: value is too low");
-            if (log.Value > 800)
-                throw new Exception("error: value is too high");
-            
-            if (log.MmolValue > 0 && log.MmolValue < 2)
-                throw new Exception("warning: mmolvalue is very low");
-            if (log.MmolValue < 1)
-                throw new Exception("error: mmolvalue is too low");
-            if (log.MmolValue > 35)
-                throw new Exception("error: mmolvalue is too high");
-
+            if (log.Value > 0)
+            {
+                if (log.Value > 0 && log.Value < 20)
+                    throw new Exception("warning: value is very low");
+                if (log.Value < 10)
+                    throw new Exception("error: value is too low");
+                if (log.Value > 800)
+                    throw new Exception("error: value is too high");
+            }
+            if (log.MmolValue > 0)
+            {
+                if (log.MmolValue > 0 && log.MmolValue < 2)
+                    throw new Exception("warning: mmolvalue is very low");
+                if (log.MmolValue < 1)
+                    throw new Exception("error: mmolvalue is too low");
+                if (log.MmolValue > 35)
+                    throw new Exception("error: mmolvalue is too high");
+            }
             if (log.Value > 0 || log.MmolValue > 0)
                 RaiseEvent(new GlucoseLoggedV1(log.Value, log.MmolValue, log.Message, log.Metadata));
         }
