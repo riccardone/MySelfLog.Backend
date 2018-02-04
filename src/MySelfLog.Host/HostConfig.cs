@@ -1,8 +1,9 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 
 namespace MySelfLog.Host
 {
-    class EventStoreConfiguration 
+    class HostConfig 
     {
         public string UserName
         {
@@ -22,12 +23,20 @@ namespace MySelfLog.Host
             }
         }
 
-        public System.Uri EventStoreLink
+        public Uri EventStoreLink
         {
             get
             {
                 var host = ConfigurationManager.AppSettings["EventStoreLink"];
-                return string.IsNullOrEmpty(host) ? new System.Uri("tcp://admin:changeit@localhost:1113") : new System.Uri(host);
+                return string.IsNullOrEmpty(host) ? new Uri("tcp://admin:changeit@eventstore:1113") : new Uri(host);
+            }
+        }
+        public Uri ElasticSearchLink
+        {
+            get
+            {
+                var host = ConfigurationManager.AppSettings["ElasticSearchLink"];
+                return string.IsNullOrEmpty(host) ? new Uri("http://elasticsearch:9200") : new Uri(host);
             }
         }
     }
