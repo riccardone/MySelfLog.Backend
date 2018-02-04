@@ -19,7 +19,7 @@ namespace MySelfLog.Host
                 x.UseLinuxIfAvailable();
                 x.UseLog4Net();
                 log4net.GlobalContext.Properties["Domain"] = "MySelfLog.Backend";
-                var esConfig = new EventStoreConfiguration();
+                var esConfig = new HostConfig();
                 x.Service<Adapter.EndPoint>(s =>
                 {
                     var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials(esConfig.UserName, esConfig.Password))
@@ -31,8 +31,8 @@ namespace MySelfLog.Host
                     var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
                     subscriptionManager.CreateSubscription();
                     var repo = new EventStoreDomainRepository("domain", domainConnection);
-                    var diaryCache = new DiaryCacheService(new Uri("http://localhost:9200"));
-                    s.ConstructUsing(name => new Adapter.EndPoint(repo, endpointConnection, new Handlers(repo, diaryCache)));
+                    var diaryCache = new DiaryCacheService(esConfig.ElasticSearchLink);
+                    s.ConstructUsing(name => new EndPoint(repo, endpointConnection, new Handlers(repo, diaryCache)));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());
                 });

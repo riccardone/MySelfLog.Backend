@@ -87,7 +87,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventStoreConfiguration.cs" />
+    <Compile Include="HostConfig.cs" />
     <Compile Include="PersistentSubscriptionManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
