@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
 
 namespace MySelfLog.Adapter.Mappings
@@ -13,6 +15,7 @@ namespace MySelfLog.Adapter.Mappings
             Value = int.Parse(body.Value.ToString());
             if (!metadata.ContainsKey("Source"))
                 metadata["Source"] = "MySelfLog-OldDiary";
+            metadata.Add("Applies", DateTime.Parse(body.LogDate.ToString()).ToString("o"));
             Metadata = metadata;
         }
     }

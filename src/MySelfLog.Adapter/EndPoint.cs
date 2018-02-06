@@ -97,7 +97,7 @@ namespace MySelfLog.Adapter
                 Log.Debug($"Handled '{eventType}' AggregateId: {aggregate.AggregateId}");
                 return;
             }
-            Log.Warn($"I can't find any handler for {eventType}");
+            throw new Exception($"I can't find any handler for {eventType}");
         }
 
         private static void SubscriptionDropped(EventStorePersistentSubscriptionBase eventStorePersistentSubscriptionBase, SubscriptionDropReason subscriptionDropReason, Exception arg3)
@@ -124,7 +124,10 @@ namespace MySelfLog.Adapter
             {
                 {"CreateDiary", o => _handlers.Handle(o as CreateDiary)},
                 {"LogReceived", o => _handlers.Handle(o as Log)},
-                {"ChangeDiaryName", o => _handlers.Handle(o as ChangeDiaryName)}
+                {"ChangeDiaryName", o => _handlers.Handle(o as ChangeDiaryName)},
+                {"OldCaloriesReceived", o => _handlers.Handle(o as Log)},
+                {"OldTerapyReceived", o => _handlers.Handle(o as Log)},
+                {"OldGlucoseValueReceived", o => _handlers.Handle(o as Log)},
             };
         }
 

@@ -25,7 +25,7 @@ namespace MySelfLog.Adapter
             Diary aggregate;
             try
             {
-                return _repository.GetById<Diary>(command.Metadata["$correlationId"]);
+                return _repository.GetById<Diary>(command.Metadata["$correlationId"], 5);
             }
             catch (AggregateNotFoundException)
             {
@@ -36,7 +36,7 @@ namespace MySelfLog.Adapter
 
         public IAggregate Handle(ChangeDiaryName command)
         {
-            var aggregate = _repository.GetById<Diary>(command.Metadata["$correlationId"]);
+            var aggregate = _repository.GetById<Diary>(command.Metadata["$correlationId"], 5);
             aggregate.ChangeDiaryName(command);
             return aggregate;
         }
@@ -46,7 +46,7 @@ namespace MySelfLog.Adapter
             Diary aggregate;
             try
             {
-                aggregate = _repository.GetById<Diary>(command.Metadata["$correlationId"]);
+                aggregate = _repository.GetById<Diary>(command.Metadata["$correlationId"], 5);
             }
             catch (AggregateNotFoundException)
             {
