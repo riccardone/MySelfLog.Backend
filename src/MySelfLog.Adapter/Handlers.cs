@@ -52,6 +52,8 @@ namespace MySelfLog.Adapter
             {
                 // Build a createDiary command: the diary name must be in the cache! 
                 // (otherwise how we end up having this Log command here?)
+                if (!_diaryCache.GetDiaries().ContainsKey(command.Metadata["$correlationId"]))
+                    throw new Exception($"The given Diary Key '{command.Metadata["$correlationId"]}' is not present in cache");
                 var diaryName = _diaryCache.GetDiaries()[command.Metadata["$correlationId"]];
                 aggregate = Handle(new CreateDiary(diaryName, command.Metadata)) as Diary;
             }
