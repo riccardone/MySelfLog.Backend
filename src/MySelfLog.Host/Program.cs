@@ -31,8 +31,7 @@ namespace MySelfLog.Host
                     var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
                     subscriptionManager.CreateSubscription();
                     var repo = new EventStoreDomainRepository("domain", domainConnection);
-                    var diaryCache = new DiaryCacheService(esConfig.ElasticSearchLink);
-                    s.ConstructUsing(name => new EndPoint(repo, endpointConnection, new Handlers(repo, diaryCache)));
+                    s.ConstructUsing(name => new EndPoint(repo, endpointConnection, new Handlers(repo, new DiaryService(esConfig.ElasticSearchLink))));
                     s.WhenStarted((tc, hostControl) => tc.Start());
                     s.WhenStopped(tc => tc.Stop());
                 });
