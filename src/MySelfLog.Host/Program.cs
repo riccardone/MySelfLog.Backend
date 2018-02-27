@@ -20,12 +20,12 @@ namespace MySelfLog.Host
                 x.UseLog4Net();
                 log4net.GlobalContext.Properties["Domain"] = "MySelfLog.Backend";
                 var esConfig = new HostConfig();
-                x.Service<Adapter.EndPoint>(s =>
+                x.Service<EndPoint>(s =>
                 {
                     var connSettings = ConnectionSettings.Create().SetDefaultUserCredentials(new UserCredentials(esConfig.UserName, esConfig.Password))
                         .KeepReconnecting().KeepRetrying().Build();
-                    var endpointConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreLink, "ES-Subscriber");
-                    var domainConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreLink, "ES-Processor");
+                    var endpointConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreSubscriberLink, "MySelfLog-Backend-Subscriber");
+                    var domainConnection = EventStoreConnection.Create(connSettings, esConfig.EventStoreProcessorLink, "MySelfLog-Backend-Processor");
                     endpointConnection.ConnectAsync().Wait();
                     domainConnection.ConnectAsync().Wait();
                     var subscriptionManager = new PersistentSubscriptionManager(endpointConnection, esConfig);
