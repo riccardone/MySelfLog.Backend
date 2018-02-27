@@ -23,11 +23,19 @@ namespace MySelfLog.Host
             }
         }
 
-        public Uri EventStoreLink
+        public Uri EventStoreSubscriberLink
         {
             get
             {
-                var host = ConfigurationManager.AppSettings["EventStoreLink"];
+                var host = ConfigurationManager.AppSettings["EventStoreSubscriberLink"];
+                return string.IsNullOrEmpty(host) ? new Uri("tcp://admin:changeit@eventstore:1113") : new Uri(host);
+            }
+        }
+        public Uri EventStoreProcessorLink
+        {
+            get
+            {
+                var host = ConfigurationManager.AppSettings["EventStoreProcessorLink"];
                 return string.IsNullOrEmpty(host) ? new Uri("tcp://admin:changeit@eventstore:1113") : new Uri(host);
             }
         }
