@@ -34,7 +34,7 @@ namespace MySelfLog.Adapter
         {
             try
             {
-                Subscribe();
+                Subscribe().Wait();
                 Log.Info($"Listening from '{InputStream}' stream");
                 Log.Info($"Joined '{PersistentSubscriptionGroup}' group");
                 Log.Info($"Log EndPoint started");
@@ -51,9 +51,9 @@ namespace MySelfLog.Adapter
         {
             _connection.Close();
         }
-        private void Subscribe()
+        private async Task Subscribe()
         {
-            _connection.ConnectToPersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup, EventAppeared, SubscriptionDropped).Wait();
+            await _connection.ConnectToPersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup, EventAppeared, SubscriptionDropped);
         }
 
         private Task EventAppeared(EventStorePersistentSubscriptionBase eventStorePersistentSubscriptionBase, ResolvedEvent resolvedEvent)
