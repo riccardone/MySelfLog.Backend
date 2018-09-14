@@ -30,12 +30,12 @@ namespace MySelfLog.Host
                         .SetHeartbeatTimeout(TimeSpan.FromSeconds(6))
                         .KeepReconnecting().KeepRetrying().Build();
                     var builderForEndPoint = new ConnectionBuilder(esConfig.EventStoreSubscriberLink,
-                        connSettings, "MySelfLog-Backend-Subscriber",
+                        connSettings, "MySelfLog-Backend-Endpoint",
                         new UserCredentials(esConfig.UserName, esConfig.Password));
-                    var subscriptionManager = new PersistentSubscriptionManager(builderForEndPoint, esConfig);
-                    subscriptionManager.CreateSubscription();
+                    //var subscriptionManager = new PersistentSubscriptionManager(builderForEndPoint, esConfig);
+                    //subscriptionManager.CreateSubscription();
                     var builderForDomain = new ConnectionBuilder(esConfig.EventStoreProcessorLink,
-                        connSettings, "MySelfLog-Backend-Processor",
+                        connSettings, "MySelfLog-Backend-Domain",
                         new UserCredentials(esConfig.UserName, esConfig.Password));
                     var domainConnection = builderForDomain.Build();
                     domainConnection.Connected += DomainConnection_Connected;

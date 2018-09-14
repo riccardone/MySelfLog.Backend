@@ -39,6 +39,10 @@ namespace MySelfLog.Adapter
                 _connection.Connected += _connection_Connected;
                 _connection.Disconnected += _connection_Disconnected;
                 _connection.ErrorOccurred += _connection_ErrorOccurred;
+                _connection.Closed += _connection_Closed;
+                _connection.Reconnecting += _connection_Reconnecting;
+                _connection.AuthenticationFailed += _connection_AuthenticationFailed;
+                _connection.ConnectAsync();
                 Log.Info($"Listening from '{InputStream}' stream");
                 Log.Info($"Joined '{PersistentSubscriptionGroup}' group");
                 Log.Info($"Log EndPoint started");
@@ -51,6 +55,28 @@ namespace MySelfLog.Adapter
             }
         }
 
+        private void _connection_AuthenticationFailed(object sender, ClientAuthenticationFailedEventArgs e)
+        {
+            Log.Error($"EndpointConnection AuthenticationFailed: {e.Reason}");
+        }
+
+        private void _connection_Reconnecting(object sender, ClientReconnectingEventArgs e)
+        {
+            Log.Warn($"EndpointConnection Reconnecting...");
+        }
+
+        private void _connection_Closed(object sender, ClientClosedEventArgs e)
+        {
+            Log.Info($"EndpointConnection Closed: {e.Reason}");
+        }
+
+        private async Task CreateSubscription()
+        {
+            await _connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
+                PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
+                _connectionBuilder.Credentials);
+        }
+
         private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
         {
             Log.Error($"EndpointConnection ErrorOccurred: {e.Exception.Message}");
@@ -61,16 +87,11 @@ namespace MySelfLog.Adapter
             Log.Error($"EndpointConnection Disconnected from {e.RemoteEndPoint}");
         }
 
-        private void _connection_Connected(object sender, ClientConnectionEventArgs e)
+        private async void _connection_Connected(object sender, ClientConnectionEventArgs e)
         {
-            try
-            {
-                Subscribe().Wait();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex);
-            }
+            Log.Info($"EndpointConnection Connected to {e.RemoteEndPoint}");
+            await CreateSubscription();
+            await Subscribe();
         }
 
         public void Stop()
