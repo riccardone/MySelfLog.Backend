@@ -14,19 +14,20 @@ namespace MySelfLog.Adapter
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(EndPoint));
         private readonly IDomainRepository _domainRepository;
-        private readonly IEventStoreConnection _connection;
+        private IEventStoreConnection _connection;
+        private readonly IConnectionBuilder _connectionBuilder;
         private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
         private readonly Dictionary<string, Func<string[], Command>> _deserialisers;
         private readonly Dictionary<string, Func<object, IAggregate>> _eventHandlerMapping;
         private readonly Handlers _handlers;
 
-        public EndPoint(IDomainRepository domainRepository, IEventStoreConnection connection, Handlers handlers)
+        public EndPoint(IDomainRepository domainRepository, IConnectionBuilder connectionBuilder, Handlers handlers)
         {
             _deserialisers = CreateDeserialisersMapping();
             _eventHandlerMapping = CreateEventHandlerMapping();
             _domainRepository = domainRepository;
-            _connection = connection;
+            _connectionBuilder = connectionBuilder;
             _handlers = handlers;
         }
 
@@ -34,7 +35,10 @@ namespace MySelfLog.Adapter
         {
             try
             {
-                Subscribe().Wait();
+                _connection = _connectionBuilder.Build();
+                _connection.Connected += _connection_Connected;
+                _connection.Disconnected += _connection_Disconnected;
+                _connection.ErrorOccurred += _connection_ErrorOccurred;
                 Log.Info($"Listening from '{InputStream}' stream");
                 Log.Info($"Joined '{PersistentSubscriptionGroup}' group");
                 Log.Info($"Log EndPoint started");
@@ -47,10 +51,33 @@ namespace MySelfLog.Adapter
             }
         }
 
+        private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
+        {
+            Log.Error($"EndpointConnection ErrorOccurred: {e.Exception.Message}");
+        }
+
+        private static void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
+        {
+            Log.Error($"EndpointConnection Disconnected from {e.RemoteEndPoint}");
+        }
+
+        private void _connection_Connected(object sender, ClientConnectionEventArgs e)
+        {
+            try
+            {
+                Subscribe().Wait();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+        }
+
         public void Stop()
         {
             _connection.Close();
         }
+
         private async Task Subscribe()
         {
             await _connection.ConnectToPersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup, EventAppeared, SubscriptionDropped);

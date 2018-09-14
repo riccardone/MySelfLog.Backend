@@ -1,19 +1,20 @@
 ﻿using System;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
+using MySelfLog.Adapter;
 
 namespace MySelfLog.Host
 {
     class PersistentSubscriptionManager
     {
-        private readonly IEventStoreConnection _connection;
+        private readonly IConnectionBuilder _connectionBuilder;
         private readonly HostConfig _configuration;
         private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
 
-        public PersistentSubscriptionManager(IEventStoreConnection connection, HostConfig configuration)
+        public PersistentSubscriptionManager(IConnectionBuilder connectionBuilder, HostConfig configuration)
         {
-            _connection = connection;
+            _connectionBuilder = connectionBuilder;
             _configuration = configuration;
         }
 
@@ -21,11 +22,13 @@ namespace MySelfLog.Host
         {
             try
             {
-                _connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
+                var connection = _connectionBuilder.Build();
+                connection.ConnectAsync().Wait();
+                connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
                     PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
                     new UserCredentials(_configuration.UserName, _configuration.Password)).Wait();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // Already exist
             }
