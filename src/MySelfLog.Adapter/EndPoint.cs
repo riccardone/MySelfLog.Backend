@@ -14,19 +14,20 @@ namespace MySelfLog.Adapter
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(EndPoint));
         private readonly IDomainRepository _domainRepository;
-        private readonly IEventStoreConnection _connection;
+        private IEventStoreConnection _connection;
+        private readonly IConnectionBuilder _connectionBuilder;
         private const string InputStream = "diary-input";
         private const string PersistentSubscriptionGroup = "myselflog-processors";
         private readonly Dictionary<string, Func<string[], Command>> _deserialisers;
         private readonly Dictionary<string, Func<object, IAggregate>> _eventHandlerMapping;
         private readonly Handlers _handlers;
 
-        public EndPoint(IDomainRepository domainRepository, IEventStoreConnection connection, Handlers handlers)
+        public EndPoint(IDomainRepository domainRepository, IConnectionBuilder connectionBuilder, Handlers handlers)
         {
             _deserialisers = CreateDeserialisersMapping();
             _eventHandlerMapping = CreateEventHandlerMapping();
             _domainRepository = domainRepository;
-            _connection = connection;
+            _connectionBuilder = connectionBuilder;
             _handlers = handlers;
         }
 
@@ -34,7 +35,14 @@ namespace MySelfLog.Adapter
         {
             try
             {
-                Subscribe().Wait();
+                _connection = _connectionBuilder.Build();
+                _connection.Connected += _connection_Connected;
+                _connection.Disconnected += _connection_Disconnected;
+                _connection.ErrorOccurred += _connection_ErrorOccurred;
+                _connection.Closed += _connection_Closed;
+                _connection.Reconnecting += _connection_Reconnecting;
+                _connection.AuthenticationFailed += _connection_AuthenticationFailed;
+                _connection.ConnectAsync();
                 Log.Info($"Listening from '{InputStream}' stream");
                 Log.Info($"Joined '{PersistentSubscriptionGroup}' group");
                 Log.Info($"Log EndPoint started");
@@ -47,10 +55,57 @@ namespace MySelfLog.Adapter
             }
         }
 
+        private void _connection_AuthenticationFailed(object sender, ClientAuthenticationFailedEventArgs e)
+        {
+            Log.Error($"EndpointConnection AuthenticationFailed: {e.Reason}");
+        }
+
+        private void _connection_Reconnecting(object sender, ClientReconnectingEventArgs e)
+        {
+            Log.Warn($"EndpointConnection Reconnecting...");
+        }
+
+        private void _connection_Closed(object sender, ClientClosedEventArgs e)
+        {
+            Log.Info($"EndpointConnection Closed: {e.Reason}");
+        }
+
+        private async Task CreateSubscription()
+        {
+            await _connection.CreatePersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup,
+                PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
+                _connectionBuilder.Credentials);
+        }
+
+        private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
+        {
+            Log.Error($"EndpointConnection ErrorOccurred: {e.Exception.Message}");
+        }
+
+        private static void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
+        {
+            Log.Error($"EndpointConnection Disconnected from {e.RemoteEndPoint}");
+        }
+
+        private async void _connection_Connected(object sender, ClientConnectionEventArgs e)
+        {
+            Log.Info($"EndpointConnection Connected to {e.RemoteEndPoint}");
+            try
+            {
+                await CreateSubscription();
+            }
+            catch (Exception)
+            {
+                // already exist
+            }
+            await Subscribe();
+        }
+
         public void Stop()
         {
             _connection.Close();
         }
+
         private async Task Subscribe()
         {
             await _connection.ConnectToPersistentSubscriptionAsync(InputStream, PersistentSubscriptionGroup, EventAppeared, SubscriptionDropped);
