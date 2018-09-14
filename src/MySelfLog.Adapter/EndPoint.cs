@@ -90,7 +90,14 @@ namespace MySelfLog.Adapter
         private async void _connection_Connected(object sender, ClientConnectionEventArgs e)
         {
             Log.Info($"EndpointConnection Connected to {e.RemoteEndPoint}");
-            await CreateSubscription();
+            try
+            {
+                await CreateSubscription();
+            }
+            catch (Exception)
+            {
+                // already exist
+            }
             await Subscribe();
         }
 
