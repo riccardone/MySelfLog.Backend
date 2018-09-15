@@ -62,10 +62,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MySelfLog.Adapter\MySelfLog.Adapter.csproj">
-      <Project>{958d7c78-f01a-498a-a953-6d7ce8c49504}</Project>
-      <Name>MySelfLog.Adapter</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MySelfLog.Domain\MySelfLog.Domain.csproj">
       <Project>{0c554817-240a-4895-91f9-6c4f4e2ce585}</Project>
       <Name>MySelfLog.Domain</Name>
