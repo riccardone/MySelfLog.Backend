@@ -1,0 +1,7 @@
+replicaCount: 1
+image:
+  useImagePullSecrets: false
+  pullPolicy: Always
+service:
+  internalPort: 5003
+  externalPort: 5003
