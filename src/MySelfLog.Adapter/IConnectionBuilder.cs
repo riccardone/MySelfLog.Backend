@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 
@@ -6,10 +6,10 @@ namespace MySelfLog.Adapter
 {
     public interface IConnectionBuilder
     {
+        string ConnectionName { get; }
         Uri ConnectionString { get; }
         ConnectionSettings ConnectionSettings { get; }
-        string ConnectionName { get; }
         UserCredentials Credentials { get; }
-        IEventStoreConnection Build();
+        IEventStoreConnection Build(bool openConnection = true);
     }
 }
