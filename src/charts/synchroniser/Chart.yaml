@@ -1,4 +1,0 @@
-apiVersion: v1
-description: Myselflog.Backend is the processing component applying event sourcing 
-name: myselflogbackend
-version: v0.1.0
