@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CloudEventRequest" Version="1.0.0" />
+    <PackageReference Include="evento" Version="5.0.0" />
+    <PackageReference Include="eventstore.client" Version="5.0.10" />
+    <PackageReference Include="microsoft.csharp" Version="4.7.0" />
+    <PackageReference Include="nlog" Version="4.7.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MySelfLog.Backend.Domain\MySelfLog.Backend.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
