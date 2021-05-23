@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MySelfLog.Backend.Host": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
