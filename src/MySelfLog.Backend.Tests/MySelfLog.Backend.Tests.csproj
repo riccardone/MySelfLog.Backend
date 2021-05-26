@@ -7,9 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudEventRequest" Version="1.0.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PayloadSamples\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MySelfLog.Backend.Adapter\MySelfLog.Backend.Adapter.csproj" />
+    <ProjectReference Include="..\MySelfLog.Backend.Domain\MySelfLog.Backend.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="PayloadSamples\creatediary.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="PayloadSamples\logterapy.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
