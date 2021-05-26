@@ -1,7 +1,6 @@
 using MySelfLog.Backend.Domain;
 using MySelfLog.Backend.Domain.Aggregates;
 using MySelfLog.Backend.Domain.Commands;
-using MySelfLog.Backend.Domain.Events;
 using NUnit.Framework;
 
 namespace MySelfLog.Backend.Tests
