@@ -45,6 +45,7 @@ namespace MySelfLog.Backend.Host
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("config/appsettings.docker.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             return builder.Build().Get<Settings>();
         }
@@ -52,7 +53,7 @@ namespace MySelfLog.Backend.Host
         private static Worker BuildWorkerUsingEventStore(Settings settings)
         {
             var subscriberFromEventStore =
-                new MessageReceiverFromEventStore(BuilderForSubscriber(settings), settings.Input_queue, $"{settings.DomainCategory}-processors");
+                new MessageReceiverFromEventStore(BuilderForSubscriber(settings), $"{settings.Input_queue}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}" , $"{settings.DomainCategory}-processors");
             var endpoint = new Worker(BuildDomainRepositories(settings), subscriberFromEventStore, settings);
             return endpoint;
         }
