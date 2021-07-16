@@ -10,5 +10,7 @@
         public string CryptoKey { get; set; }
         public string CertificateFqdn { get; set; }
         public string Input_queue { get; set; }
+        public string Input_queue_forced { get; set; }
+        public int Metrics_port { get; set; }
     }
 }

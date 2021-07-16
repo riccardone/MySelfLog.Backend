@@ -23,7 +23,7 @@ namespace MySelfLog.Backend.Adapter
         public MessageReceiverFromEventStore(IConnectionBuilder subscriberBuilder, string inputStream, string persistenSubscriptionGroupName)
         {
             _connectionBuilder = subscriberBuilder;
-            _inputStream = $"{inputStream}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}";
+            _inputStream = inputStream; //$"{inputStream}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}";
             _persistentSubscriptionGroup = persistenSubscriptionGroupName;
         }
         public bool Start()

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using Evento;
 using Evento.Repository;
 using Microsoft.Extensions.Configuration;
 using MySelfLog.Backend.Adapter;
 using NLog;
+using Prometheus;
 
 namespace MySelfLog.Backend.Host
 {
@@ -15,18 +17,30 @@ namespace MySelfLog.Backend.Host
         static void Main(string[] args)
         {
             var settings = BuildConfig();
-            Log.Info("Starting Endpoint setup");
-            
-            var endpoint = BuildWorkerUsingEventStore(settings);
-           
-            Log.Info("Completed Endpoint setup");
 
             try
             {
-                Log.Info("Starting: Backend Component");
+                SetupRequirements(settings);
+                Log.Info($"Metrics endpoint configured: <host>:{settings.Metrics_port}/metrics");
+            }
+            catch (HttpListenerException e)
+            {
+                Log.Warn("Metrics endpoint not configured, try to run the program with administrative permission");
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Error while configuring metrics endpoint: {ex.GetBaseException().Message}");
+            }
+
+            Worker endpoint = null;
+
+            try
+            {
+                Log.Info("Starting Backend Component");
+                endpoint = BuildWorkerUsingEventStore(settings);
                 if (!endpoint.Start())
                     throw new Exception("Fatal error while starting the endpoint");
-                Log.Info("Started: Backend Component");
+                Log.Info("Started Backend Component");
                 Console.ReadLine();
             }
             catch (Exception e)
@@ -35,7 +49,13 @@ namespace MySelfLog.Backend.Host
             }
 
             Log.Info("Shutting down naturally: Backend Component");
-            endpoint.Stop();
+            endpoint?.Stop();
+        }
+
+        private static void SetupRequirements(Settings settings)
+        {
+            var metricServer = new MetricServer(port: settings.Metrics_port);
+            metricServer.Start();
         }
 
         private static Settings BuildConfig()
@@ -43,7 +63,7 @@ namespace MySelfLog.Backend.Host
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "dev";
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false)
                 .AddJsonFile("config/appsettings.docker.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
@@ -52,8 +72,11 @@ namespace MySelfLog.Backend.Host
 
         private static Worker BuildWorkerUsingEventStore(Settings settings)
         {
-            var subscriberFromEventStore =
-                new MessageReceiverFromEventStore(BuilderForSubscriber(settings), $"{settings.Input_queue}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}" , $"{settings.DomainCategory}-processors");
+            var queue = string.IsNullOrWhiteSpace(settings.Input_queue_forced)
+                ? $"{settings.Input_queue}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}"
+                : settings.Input_queue_forced;
+            var subscriberFromEventStore = new MessageReceiverFromEventStore(BuilderForSubscriber(settings), queue,
+                $"{settings.DomainCategory}-processors");
             var endpoint = new Worker(BuildDomainRepositories(settings), subscriberFromEventStore, settings);
             return endpoint;
         }

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myselflog-backend-deployment
+  labels:
+    app: myselflog-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myselflog-backend
+  # strategy:
+  #   rollingUpdate:
+  #     maxSurge: 1
+  #     maxUnavailable: 1
+  # minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: myselflog-backend
+    spec:
+      containers:
+      - name: myselflog-backend
+        image: <IMAGE>        
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP 
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi   
+        volumeMounts:
+          - name: config-volume
+            mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: myselflog-backend-config
+        # envFrom:
+        # - configMapRef:
+        #     name: evento-api-config
+        # livenessProbe:
+        #   httpGet:
+        #     path: "/health"
+        #     port: 80
+        #   initialDelaySeconds: 6
+        #   periodSeconds: 12
+        # readinessProbe:
+        #   httpGet:
+        #     path: "/health"
+        #     port: 80
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 20
