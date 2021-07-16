@@ -5,10 +5,10 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["./MySelfLog.Backend.Host.csproj", "MySelfLog.Backend.Host/"]
-COPY ["MySelfLog.Backend.Adapter/MySelfLog.Backend.Adapter.csproj", "MySelfLog.Backend.Adapter/"]
-COPY ["MySelfLog.Backend.Domain/MySelfLog.Backend.Domain.csproj", "MySelfLog.Backend.Domain/"]
-RUN dotnet restore "MySelfLog.Backend.Host/MySelfLog.Backend.Host.csproj"
+COPY ["./src/MySelfLog.Backend.Host/MySelfLog.Backend.Host.csproj", "MySelfLog.Backend.Host/"]
+COPY ["./src/MySelfLog.Backend.Adapter/MySelfLog.Backend.Adapter.csproj", "MySelfLog.Backend.Adapter/"]
+COPY ["./src/MySelfLog.Backend.Domain/MySelfLog.Backend.Domain.csproj", "MySelfLog.Backend.Domain/"]
+RUN dotnet restore "./src/MySelfLog.Backend.Host/MySelfLog.Backend.Host.csproj"
 COPY . .
 WORKDIR "/src/MySelfLog.Backend.Host"
 RUN dotnet build "MySelfLog.Backend.Host.csproj" -c Release -o /app/build
