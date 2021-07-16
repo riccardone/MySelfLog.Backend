@@ -31,10 +31,10 @@ jobs:
       
     - name: Build
       run: dotnet build --no-restore
-      working-directory: src/     
+      working-directory: src/           
       
     - name: Build container image
-      run: docker build -t registry.digitalocean.com/riccardone/myselflog-backend:$(echo $GITHUB_SHA | head -c7) src/MySelfLog.Backend.Host/.
+      run: docker build -t registry.digitalocean.com/riccardone/myselflog-backend:$(echo $GITHUB_SHA | head -c7) MySelfLog.Backend.Host/.
     
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
