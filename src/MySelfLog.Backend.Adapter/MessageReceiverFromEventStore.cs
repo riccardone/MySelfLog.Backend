@@ -50,7 +50,7 @@ namespace MySelfLog.Backend.Adapter
             var eventData = new EventData(Guid.NewGuid(), "test-event",true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
             try
             {
-                _subscriber.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Wait();
+                _subscriber.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Wait(2000);
             }
             catch (Exception ex)
             {
