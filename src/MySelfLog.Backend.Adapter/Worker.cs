@@ -36,17 +36,9 @@ namespace MySelfLog.Backend.Adapter
 
         public bool Start()
         {
-            try
-            {
-                _deserialisers = CreateDeserialisersMapping();
-                _messageReceiver.RegisterMessageHandler(Subscriber);
-                return _messageReceiver.Start();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message.ToString());
-                return false;
-            }
+            _deserialisers = CreateDeserialisersMapping();
+            _messageReceiver.RegisterMessageHandler(Subscriber);
+            return _messageReceiver.Start();
         }
 
         public void Stop()
