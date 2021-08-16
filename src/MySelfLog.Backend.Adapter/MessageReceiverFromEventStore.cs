@@ -63,17 +63,17 @@ namespace MySelfLog.Backend.Adapter
             _handlers.Add(handler);
         }
 
-        private async Task CreateSubscription()
+        private void CreateSubscription()
         {
-            await _connection.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+            _connection.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
-                _connectionBuilder.Credentials);
+                _connectionBuilder.Credentials).Wait();
         }
 
-        private async Task Subscribe()
+        private void Subscribe()
         {
-            await _connection.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
-                EventAppeared, SubscriptionDropped);
+            _connection.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+                EventAppeared, SubscriptionDropped).Wait();
         }
 
         private static void SubscriptionDropped(
@@ -133,13 +133,13 @@ namespace MySelfLog.Backend.Adapter
             Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");
             try
             {
-                CreateSubscription().Wait();
+                CreateSubscription();
             }
             catch (Exception)
             {
                 // already exist
             }
-            Subscribe().Wait();
+            Subscribe();
         }
 
         private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
