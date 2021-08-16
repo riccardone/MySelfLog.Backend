@@ -54,8 +54,8 @@ namespace MySelfLog.Backend.Adapter
             }
             catch (Exception ex)
             {
-                Log.Error(ex.GetBaseException().Message);
-                throw;
+                Log.Info(ex.GetBaseException().Message);
+                //throw;
             }            
         }
 
