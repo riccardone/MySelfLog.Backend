@@ -14,52 +14,52 @@ namespace MySelfLog.Backend.Adapter
     public class MessageReceiverFromEventStore : IMessageReceiver
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private readonly IConnectionBuilder _connectionBuilder;
+        private readonly IConnectionBuilder _subscriberBuilder;
         private readonly string _inputStream;
-        private IEventStoreConnection _connection;
+        private IEventStoreConnection _subscriber;
         private readonly string _persistentSubscriptionGroup;
         private List<Func<object, CancellationToken, Task>> _handlers;
 
         public MessageReceiverFromEventStore(IConnectionBuilder subscriberBuilder, string inputStream, string persistenSubscriptionGroupName)
         {
-            _connectionBuilder = subscriberBuilder;
+            _subscriberBuilder = subscriberBuilder;
             _inputStream = inputStream; //$"{inputStream}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}";
             _persistentSubscriptionGroup = persistenSubscriptionGroupName;
         }
         public bool Start()
         {
-            _connection?.Close();
-            _connection = _connectionBuilder.Build(false);
-            _connection.Connected += _connection_Connected;
-            _connection.Disconnected += _connection_Disconnected;
-            _connection.ErrorOccurred += _connection_ErrorOccurred;
-            _connection.Closed += _connection_Closed;
-            _connection.Reconnecting += _connection_Reconnecting;
-            _connection.AuthenticationFailed += _connection_AuthenticationFailed;
+            _subscriber?.Close();
+            _subscriber = _subscriberBuilder.Build(false);
+            _subscriber.Connected += _connection_Connected;
+            _subscriber.Disconnected += _connection_Disconnected;
+            _subscriber.ErrorOccurred += _connection_ErrorOccurred;
+            _subscriber.Closed += _connection_Closed;
+            _subscriber.Reconnecting += _connection_Reconnecting;
+            _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;            
             Log.Info("Connecting to EventStore...");
-            _connection.ConnectAsync().Wait();
-            test(_connection);
+            _subscriber.ConnectAsync().Wait();
+            //test(_subscriber);
             Log.Info($"Listening from '{_inputStream}' stream");
             Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
             Log.Info($"EndPoint started");
             return true;
         }
 
-        private static void test(IEventStoreConnection client)
+        private void test(IEventStoreConnection client)
         {
-            var eventData = new EventData(Guid.NewGuid(), "some-event",true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
-            client.AppendToStreamAsync("same-event-stream", ExpectedVersion.Any, new List<EventData> { eventData }).Wait();
+            var eventData = new EventData(Guid.NewGuid(), "test-event",true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
+            client.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Wait();
         }
 
         public void Stop()
         {
-            _connection.ErrorOccurred -= _connection_ErrorOccurred;
-            _connection.Disconnected -= _connection_Disconnected;
-            _connection.AuthenticationFailed -= _connection_AuthenticationFailed;
-            _connection.Connected -= _connection_Connected;
-            _connection.Reconnecting -= _connection_Reconnecting;
+            _subscriber.ErrorOccurred -= _connection_ErrorOccurred;
+            _subscriber.Disconnected -= _connection_Disconnected;
+            _subscriber.AuthenticationFailed -= _connection_AuthenticationFailed;
+            _subscriber.Connected -= _connection_Connected;
+            _subscriber.Reconnecting -= _connection_Reconnecting;
 
-            _connection?.Close();
+            _subscriber?.Close();
             Log.Info($"{nameof(EndPoint)} stopped");
         }
 
@@ -73,15 +73,15 @@ namespace MySelfLog.Backend.Adapter
         private void CreateSubscription()
         {
             Log.Debug($"Creating subscription for stream '{_inputStream}'...");
-            _connection.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+            _subscriber.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
-                _connectionBuilder.Credentials).Wait();
+                _subscriberBuilder.Credentials).Wait();
             Log.Debug($"Subscription for stream '{_inputStream}' created");
         }
 
         private void Subscribe()
         {
-            _connection.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+            _subscriber.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 EventAppeared, SubscriptionDropped).Wait();
         }
 
