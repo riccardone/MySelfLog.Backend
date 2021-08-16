@@ -72,9 +72,11 @@ namespace MySelfLog.Backend.Adapter
 
         private void CreateSubscription()
         {
+            Log.Debug($"Creating subscription for stream '{_inputStream}'...");
             _connection.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
                 _connectionBuilder.Credentials).Wait();
+            Log.Debug($"Subscription for stream '{_inputStream}' created");
         }
 
         private void Subscribe()
