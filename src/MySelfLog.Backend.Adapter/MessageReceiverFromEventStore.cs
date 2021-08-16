@@ -38,17 +38,25 @@ namespace MySelfLog.Backend.Adapter
             _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;            
             Log.Info("Connecting to EventStore...");
             _subscriber.ConnectAsync().Wait();
-            //test(_subscriber);
+            test();
             Log.Info($"Listening from '{_inputStream}' stream");
             Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
             Log.Info($"EndPoint started");
             return true;
         }
 
-        private void test(IEventStoreConnection client)
+        private void test()
         {
             var eventData = new EventData(Guid.NewGuid(), "test-event",true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
-            client.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Wait();
+            try
+            {
+                _subscriber.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Wait();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.GetBaseException().Message);
+                throw;
+            }            
         }
 
         public void Stop()
