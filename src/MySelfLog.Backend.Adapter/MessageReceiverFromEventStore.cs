@@ -39,8 +39,6 @@ namespace MySelfLog.Backend.Adapter
             Log.Info("Connecting to EventStore...");
             _subscriber.ConnectAsync().Wait();
             test();
-            Log.Info($"Listening from '{_inputStream}' stream");
-            Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
             Log.Info($"EndPoint started");
             return true;
         }
@@ -50,6 +48,7 @@ namespace MySelfLog.Backend.Adapter
             var eventData = new EventData(Guid.NewGuid(), "test-event",true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
             try
             {
+                Log.Debug("Writing a test event...");
                 var res = _subscriber.AppendToStreamAsync(_inputStream, ExpectedVersion.Any, new List<EventData> { eventData }).Result;
                 Log.Debug($"LogPosition: {res.LogPosition} NextVer: {res.NextExpectedVersion}");
             }
