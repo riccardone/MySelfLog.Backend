@@ -128,18 +128,18 @@ namespace MySelfLog.Backend.Adapter
         }
 
         #region connectionevents
-        private async void _connection_Connected(object sender, ClientConnectionEventArgs e)
+        private void _connection_Connected(object sender, ClientConnectionEventArgs e)
         {
             Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");
             try
             {
-                await CreateSubscription();
+                CreateSubscription().Wait();
             }
             catch (Exception)
             {
                 // already exist
             }
-            await Subscribe();
+            Subscribe().Wait();
         }
 
         private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
