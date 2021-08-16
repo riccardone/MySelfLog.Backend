@@ -16,6 +16,7 @@ namespace MySelfLog.Backend.Adapter
         
         public IEventStoreConnection Build(bool openConnection = true)
         {
+            Log.Debug($"Building connection name '{ConnectionName}' using connstring '{ConnectionString}'");
             var conn = EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);
             conn.Disconnected += Conn_Disconnected;
             conn.Reconnecting += Conn_Reconnecting;
