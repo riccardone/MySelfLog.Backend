@@ -28,27 +28,20 @@ namespace MySelfLog.Backend.Adapter
         }
         public bool Start()
         {
-            try
-            {
-                _connection?.Close();
-                _connection = _connectionBuilder.Build(false);
-                _connection.Connected += _connection_Connected;
-                _connection.Disconnected += _connection_Disconnected;
-                _connection.ErrorOccurred += _connection_ErrorOccurred;
-                _connection.Closed += _connection_Closed;
-                _connection.Reconnecting += _connection_Reconnecting;
-                _connection.AuthenticationFailed += _connection_AuthenticationFailed;
-                _connection.ConnectAsync().Wait();
-                Log.Info($"Listening from '{_inputStream}' stream");
-                Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
-                Log.Info($"EndPoint started");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message.ToString());
-                return false;
-            }
+            _connection?.Close();
+            _connection = _connectionBuilder.Build(false);
+            _connection.Connected += _connection_Connected;
+            _connection.Disconnected += _connection_Disconnected;
+            _connection.ErrorOccurred += _connection_ErrorOccurred;
+            _connection.Closed += _connection_Closed;
+            _connection.Reconnecting += _connection_Reconnecting;
+            _connection.AuthenticationFailed += _connection_AuthenticationFailed;
+            Log.Info("Connecting to EventStore...");
+            _connection.ConnectAsync().Wait();
+            Log.Info($"Listening from '{_inputStream}' stream");
+            Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
+            Log.Info($"EndPoint started");
+            return true;
         }
 
         public void Stop()
