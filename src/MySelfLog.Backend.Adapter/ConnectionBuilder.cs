@@ -17,30 +17,12 @@ namespace MySelfLog.Backend.Adapter
         public IEventStoreConnection Build(bool openConnection = true)
         {
             Log.Debug($"Building connection name '{ConnectionName}' using connstring '{ConnectionString}'");
-            var conn = EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);
-            conn.Disconnected += Conn_Disconnected;
-            conn.Reconnecting += Conn_Reconnecting;
-            conn.Connected += Conn_Connected;
+            var conn = EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);            
             if (openConnection)
                 conn.ConnectAsync().Wait();
 
             return conn;
-        }
-
-        private void Conn_Connected(object sender, ClientConnectionEventArgs e)
-        {
-            Log.Debug($"Connected to EventStore RemoteEndPoint:'{e.RemoteEndPoint}';ConnectionName:'{e.Connection.ConnectionName}'");
-        }
-
-        private void Conn_Reconnecting(object sender, ClientReconnectingEventArgs e)
-        {
-            Log.Debug($"Reconnecting to EventStore ConnectionName:'{e.Connection.ConnectionName}'");
-        }
-
-        private void Conn_Disconnected(object sender, ClientConnectionEventArgs e)
-        {
-            Log.Error($"Disconnected from EventStore RemoteEndPoint:'{e.RemoteEndPoint}';ConnectionName:'{e.Connection.ConnectionName}'");
-        }
+        }        
 
         public ConnectionBuilder(Uri connectionString, ConnectionSettings connectionSettings, string connectionName, UserCredentials credentials)
         {
