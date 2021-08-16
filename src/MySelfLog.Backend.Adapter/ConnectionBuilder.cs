@@ -43,19 +43,14 @@ namespace MySelfLog.Backend.Adapter
         public static ConnectionSettings BuildConnectionSettings(Settings settings)
         {
             var connSettings = string.IsNullOrWhiteSpace(settings.CertificateFqdn)
-                ? ConnectionSettings.Create()
-                    .SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
-                        settings.EventStore_Password))
-                    .SetHeartbeatInterval(TimeSpan.FromSeconds(10))
-                    .SetHeartbeatTimeout(TimeSpan.FromSeconds(5))
-                    .KeepReconnecting().KeepRetrying().SetReconnectionDelayTo(TimeSpan.FromSeconds(2)).Build()
-                : ConnectionSettings.Create()
-                    .UseSslConnection(settings.CertificateFqdn, true)
-                    .SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
-                        settings.EventStore_Password))
-                    .KeepReconnecting().KeepRetrying();
+                ? ConnectionSettings.Create()                    
+                : ConnectionSettings.Create().UseSslConnection(settings.CertificateFqdn, true);
 
-            return connSettings;
+            return connSettings.SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
+                        settings.EventStore_Password))
+                    .SetHeartbeatInterval(TimeSpan.FromSeconds(8))
+                    .SetHeartbeatTimeout(TimeSpan.FromSeconds(4))
+                    .KeepReconnecting().KeepRetrying().Build();
         }
     }
 }
