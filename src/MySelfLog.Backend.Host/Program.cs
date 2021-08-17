@@ -58,7 +58,7 @@ namespace MySelfLog.Backend.Host
         private static void test(Settings settings)
         {
             var connBuilder = BuilderForSubscriber(settings);
-            var conn = connBuilder.Build();
+            var conn = connBuilder.Build(false);
             conn.ConnectAsync().Wait();
             var eventData = new EventData(Guid.NewGuid(), "test-event", true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
             try
