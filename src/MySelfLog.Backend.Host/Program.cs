@@ -64,7 +64,7 @@ namespace MySelfLog.Backend.Host
             try
             {
                 Log.Debug("Writing a test event...");
-                var res = conn.AppendToStreamAsync("", ExpectedVersion.Any, new List<EventData> { eventData }).Result;
+                var res = conn.AppendToStreamAsync(settings.Input_queue, ExpectedVersion.Any, new List<EventData> { eventData }).Result;
                 Log.Debug($"LogPosition: {res.LogPosition} NextVer: {res.NextExpectedVersion}");
             }
             catch (Exception ex)
