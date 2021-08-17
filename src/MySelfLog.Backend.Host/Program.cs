@@ -19,39 +19,39 @@ namespace MySelfLog.Backend.Host
         static void Main(string[] args)
         {            
             var settings = BuildConfig();
-            test(settings);
+            //test(settings);
 
-            //try
-            //{
-            //    SetupRequirements(settings);
-            //    Log.Info($"Metrics endpoint configured: <host>:{settings.Metrics_port}/metrics");
-            //}
-            //catch (HttpListenerException e)
-            //{
-            //    Log.Warn("Metrics endpoint not configured, try to run the program with administrative permission");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Warn($"Error while configuring metrics endpoint: {ex.GetBaseException().Message}");
-            //}
+            try
+            {
+                SetupRequirements(settings);
+                Log.Info($"Metrics endpoint configured: <host>:{settings.Metrics_port}/metrics");
+            }
+            catch (HttpListenerException e)
+            {
+                Log.Warn("Metrics endpoint not configured, try to run the program with administrative permission");
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Error while configuring metrics endpoint: {ex.GetBaseException().Message}");
+            }
 
-            //Worker endpoint = null;
+            Worker endpoint = null;
 
-            //try
-            //{
-            //    Log.Info("Starting Backend Component");
-            //    endpoint = BuildWorkerUsingEventStore(settings);
-            //    if (!endpoint.Start())
-            //        throw new Exception("Fatal error while starting the endpoint");
-            //    Log.Info("Started Backend Component");
-            //    Console.ReadLine();
-            //}
-            //catch (Exception e)
-            //{
-            //    Log.Fatal(e);
-            //}
+            try
+            {
+                Log.Info("Starting Backend Component");
+                endpoint = BuildWorkerUsingEventStore(settings);
+                if (!endpoint.Start())
+                    throw new Exception("Fatal error while starting the endpoint");
+                Log.Info("Started Backend Component");
+                Console.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e);
+            }
 
-            //endpoint?.Stop();
+            endpoint?.Stop();
             Log.Info("Shutting down naturally: Backend Component");
         }
 
