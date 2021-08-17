@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using Evento;
 using Evento.Repository;
+using EventStore.ClientAPI;
 using Microsoft.Extensions.Configuration;
 using MySelfLog.Backend.Adapter;
 using NLog;
@@ -15,41 +17,61 @@ namespace MySelfLog.Backend.Host
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
-        {
+        {            
             var settings = BuildConfig();
+            test(settings);
 
+            //try
+            //{
+            //    SetupRequirements(settings);
+            //    Log.Info($"Metrics endpoint configured: <host>:{settings.Metrics_port}/metrics");
+            //}
+            //catch (HttpListenerException e)
+            //{
+            //    Log.Warn("Metrics endpoint not configured, try to run the program with administrative permission");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Warn($"Error while configuring metrics endpoint: {ex.GetBaseException().Message}");
+            //}
+
+            //Worker endpoint = null;
+
+            //try
+            //{
+            //    Log.Info("Starting Backend Component");
+            //    endpoint = BuildWorkerUsingEventStore(settings);
+            //    if (!endpoint.Start())
+            //        throw new Exception("Fatal error while starting the endpoint");
+            //    Log.Info("Started Backend Component");
+            //    Console.ReadLine();
+            //}
+            //catch (Exception e)
+            //{
+            //    Log.Fatal(e);
+            //}
+
+            //endpoint?.Stop();
+            Log.Info("Shutting down naturally: Backend Component");
+        }
+
+        private static void test(Settings settings)
+        {
+            var connBuilder = BuilderForSubscriber(settings);
+            var conn = connBuilder.Build();
+            conn.ConnectAsync().Wait();
+            var eventData = new EventData(Guid.NewGuid(), "test-event", true, Encoding.UTF8.GetBytes("{\"id\": \"1\" \"value\": \"some value\"}"), null);
             try
             {
-                SetupRequirements(settings);
-                Log.Info($"Metrics endpoint configured: <host>:{settings.Metrics_port}/metrics");
-            }
-            catch (HttpListenerException e)
-            {
-                Log.Warn("Metrics endpoint not configured, try to run the program with administrative permission");
+                Log.Debug("Writing a test event...");
+                var res = conn.AppendToStreamAsync("", ExpectedVersion.Any, new List<EventData> { eventData }).Result;
+                Log.Debug($"LogPosition: {res.LogPosition} NextVer: {res.NextExpectedVersion}");
             }
             catch (Exception ex)
             {
-                Log.Warn($"Error while configuring metrics endpoint: {ex.GetBaseException().Message}");
+                Log.Info(ex.GetBaseException().Message);
+                //throw;
             }
-
-            Worker endpoint = null;
-
-            try
-            {
-                Log.Info("Starting Backend Component");
-                endpoint = BuildWorkerUsingEventStore(settings);
-                if (!endpoint.Start())
-                    throw new Exception("Fatal error while starting the endpoint");
-                Log.Info("Started Backend Component");
-                Console.ReadLine();
-            }
-            catch (Exception e)
-            {
-                Log.Fatal(e);
-            }
-
-            Log.Info("Shutting down naturally: Backend Component");
-            endpoint?.Stop();
         }
 
         private static void SetupRequirements(Settings settings)
