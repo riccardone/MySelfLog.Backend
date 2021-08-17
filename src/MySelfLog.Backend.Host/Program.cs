@@ -64,7 +64,7 @@ namespace MySelfLog.Backend.Host
             try
             {
                 Log.Debug("Writing a test event...");
-                var res = conn.AppendToStreamAsync(settings.Input_queue, ExpectedVersion.Any, new List<EventData> { eventData }).Result;
+                var res = conn.AppendToStreamAsync(GetQueueName(settings), ExpectedVersion.Any, new List<EventData> { eventData }).Result;
                 Log.Debug($"LogPosition: {res.LogPosition} NextVer: {res.NextExpectedVersion}");
             }
             catch (Exception ex)
@@ -94,13 +94,18 @@ namespace MySelfLog.Backend.Host
 
         private static Worker BuildWorkerUsingEventStore(Settings settings)
         {
-            var queue = string.IsNullOrWhiteSpace(settings.Input_queue_forced)
-                ? $"{settings.Input_queue}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}"
-                : settings.Input_queue_forced;
+            string queue = GetQueueName(settings);
             var subscriberFromEventStore = new MessageReceiverFromEventStore(BuilderForSubscriber(settings), queue,
                 $"{settings.DomainCategory}-processors");
             var endpoint = new Worker(BuildDomainRepositories(settings), subscriberFromEventStore, settings);
             return endpoint;
+        }
+
+        private static string GetQueueName(Settings settings)
+        {
+            return string.IsNullOrWhiteSpace(settings.Input_queue_forced)
+                            ? $"{settings.Input_queue}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}"
+                            : settings.Input_queue_forced;
         }
 
         private static Dictionary<string, IDomainRepository> BuildDomainRepositories(Settings settings)
