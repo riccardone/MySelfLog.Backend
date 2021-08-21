@@ -16,30 +16,13 @@ namespace MySelfLog.Backend.Adapter
         
         public IEventStoreConnection Build(bool openConnection = true)
         {
-            var conn = EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);
-            conn.Disconnected += Conn_Disconnected;
-            conn.Reconnecting += Conn_Reconnecting;
-            conn.Connected += Conn_Connected;
+            Log.Debug($"Building connection name '{ConnectionName}' using connstring '{ConnectionString}'");
+            var conn = EventStoreConnection.Create(ConnectionSettings, ConnectionString, ConnectionName);            
             if (openConnection)
                 conn.ConnectAsync().Wait();
 
             return conn;
-        }
-
-        private void Conn_Connected(object sender, ClientConnectionEventArgs e)
-        {
-            Log.Debug($"Connected to EventStore RemoteEndPoint:'{e.RemoteEndPoint}';ConnectionName:'{e.Connection.ConnectionName}'");
-        }
-
-        private void Conn_Reconnecting(object sender, ClientReconnectingEventArgs e)
-        {
-            Log.Debug($"Reconnecting to EventStore ConnectionName:'{e.Connection.ConnectionName}'");
-        }
-
-        private void Conn_Disconnected(object sender, ClientConnectionEventArgs e)
-        {
-            Log.Error($"Disconnected from EventStore RemoteEndPoint:'{e.RemoteEndPoint}';ConnectionName:'{e.Connection.ConnectionName}'");
-        }
+        }        
 
         public ConnectionBuilder(Uri connectionString, ConnectionSettings connectionSettings, string connectionName, UserCredentials credentials)
         {
@@ -60,19 +43,15 @@ namespace MySelfLog.Backend.Adapter
         public static ConnectionSettings BuildConnectionSettings(Settings settings)
         {
             var connSettings = string.IsNullOrWhiteSpace(settings.CertificateFqdn)
-                ? ConnectionSettings.Create()
-                    .SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
-                        settings.EventStore_Password))
-                    .SetHeartbeatInterval(TimeSpan.FromSeconds(10))
-                    .SetHeartbeatTimeout(TimeSpan.FromSeconds(5))
-                    .KeepReconnecting().KeepRetrying().SetReconnectionDelayTo(TimeSpan.FromSeconds(2)).Build()
-                : ConnectionSettings.Create()
-                    .UseSslConnection(settings.CertificateFqdn, true)
-                    .SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
-                        settings.EventStore_Password))
-                    .KeepReconnecting().KeepRetrying();
+                ? ConnectionSettings.Create()                    
+                : ConnectionSettings.Create().UseSslConnection(settings.CertificateFqdn, true);
 
-            return connSettings;
+            return connSettings.SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
+                        settings.EventStore_Password))
+                    .KeepReconnecting().KeepRetrying()
+                    .SetHeartbeatInterval(TimeSpan.FromSeconds(8))
+                    .SetHeartbeatTimeout(TimeSpan.FromSeconds(4))
+                    .Build();
         }
     }
 }

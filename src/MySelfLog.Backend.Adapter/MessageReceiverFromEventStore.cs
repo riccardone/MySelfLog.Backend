@@ -14,52 +14,42 @@ namespace MySelfLog.Backend.Adapter
     public class MessageReceiverFromEventStore : IMessageReceiver
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        private readonly IConnectionBuilder _connectionBuilder;
+        private readonly IConnectionBuilder _subscriberBuilder;
         private readonly string _inputStream;
-        private IEventStoreConnection _connection;
+        private IEventStoreConnection _subscriber;
         private readonly string _persistentSubscriptionGroup;
         private List<Func<object, CancellationToken, Task>> _handlers;
 
         public MessageReceiverFromEventStore(IConnectionBuilder subscriberBuilder, string inputStream, string persistenSubscriptionGroupName)
         {
-            _connectionBuilder = subscriberBuilder;
-            _inputStream = $"{inputStream}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}";
+            _subscriberBuilder = subscriberBuilder;
+            _inputStream = inputStream; //$"{inputStream}-{DateTime.UtcNow.Year}-{DateTime.UtcNow.Month}";
             _persistentSubscriptionGroup = persistenSubscriptionGroupName;
         }
         public bool Start()
         {
-            try
-            {
-                _connection?.Close();
-                _connection = _connectionBuilder.Build(false);
-                _connection.Connected += _connection_Connected;
-                _connection.Disconnected += _connection_Disconnected;
-                _connection.ErrorOccurred += _connection_ErrorOccurred;
-                _connection.Closed += _connection_Closed;
-                _connection.Reconnecting += _connection_Reconnecting;
-                _connection.AuthenticationFailed += _connection_AuthenticationFailed;
-                _connection.ConnectAsync().Wait();
-                Log.Info($"Listening from '{_inputStream}' stream");
-                Log.Info($"Joined '{_persistentSubscriptionGroup}' group");
-                Log.Info($"EndPoint started");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message.ToString());
-                return false;
-            }
+            _subscriber?.Close();
+            _subscriber = _subscriberBuilder.Build(false);
+            _subscriber.Connected += _connection_Connected;
+            _subscriber.Disconnected += _connection_Disconnected;
+            _subscriber.ErrorOccurred += _connection_ErrorOccurred;
+            _subscriber.Closed += _connection_Closed;
+            _subscriber.Reconnecting += _connection_Reconnecting;
+            _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;   
+            _subscriber.ConnectAsync().Wait();            
+            Subscribe().Wait();
+            return true;
         }
-
+       
         public void Stop()
         {
-            _connection.ErrorOccurred -= _connection_ErrorOccurred;
-            _connection.Disconnected -= _connection_Disconnected;
-            _connection.AuthenticationFailed -= _connection_AuthenticationFailed;
-            _connection.Connected -= _connection_Connected;
-            _connection.Reconnecting -= _connection_Reconnecting;
+            _subscriber.ErrorOccurred -= _connection_ErrorOccurred;
+            _subscriber.Disconnected -= _connection_Disconnected;
+            _subscriber.AuthenticationFailed -= _connection_AuthenticationFailed;
+            _subscriber.Connected -= _connection_Connected;
+            _subscriber.Reconnecting -= _connection_Reconnecting;
 
-            _connection?.Close();
+            _subscriber?.Close();
             Log.Info($"{nameof(EndPoint)} stopped");
         }
 
@@ -71,15 +61,16 @@ namespace MySelfLog.Backend.Adapter
         }
 
         private async Task CreateSubscription()
-        {
-            await _connection.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+        {               
+            await _subscriber.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
-                _connectionBuilder.Credentials);
+                _subscriberBuilder.Credentials);            
         }
 
         private async Task Subscribe()
-        {
-            await _connection.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+        {           
+            CreateSubscription();
+            await _subscriber.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 EventAppeared, SubscriptionDropped);
         }
 
@@ -135,18 +126,9 @@ namespace MySelfLog.Backend.Adapter
         }
 
         #region connectionevents
-        private async void _connection_Connected(object sender, ClientConnectionEventArgs e)
+        private void _connection_Connected(object sender, ClientConnectionEventArgs e)
         {
-            Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");
-            try
-            {
-                await CreateSubscription();
-            }
-            catch (Exception)
-            {
-                // already exist
-            }
-            await Subscribe();
+            Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");           
         }
 
         private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
@@ -154,9 +136,12 @@ namespace MySelfLog.Backend.Adapter
             Log.Error($"{nameof(MessageReceiverFromEventStore)} ErrorOccurred: {e.Exception.Message}");
         }
 
-        private static void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
+        private void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
         {
             Log.Error($"{nameof(MessageReceiverFromEventStore)} Disconnected from {e.RemoteEndPoint}");
+            // Some black magic is going on with es and this is needed to re-establish the persistent subscription
+            Stop();
+            Start();
         }
         private void _connection_AuthenticationFailed(object sender, ClientAuthenticationFailedEventArgs e)
         {
