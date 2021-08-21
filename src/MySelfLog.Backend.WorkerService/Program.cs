@@ -1,22 +1,24 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace MySelfLog.Backend.Host
+namespace MySelfLog.Backend.WorkerService
 {
     public class Program
     {
-        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        static void Main(string[] args)
-        {           
+        public static void Main(string[] args)
+        {
             CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+            Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                });        
+                });
     }
 }

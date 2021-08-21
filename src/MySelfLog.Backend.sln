@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.79
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySelfLog.Backend.Host", "MySelfLog.Backend.Host\MySelfLog.Backend.Host.csproj", "{EA1E8CC1-BCE7-47AE-8A42-900A0C429EF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySelfLog.Backend.Host", "MySelfLog.Backend.Host\MySelfLog.Backend.Host.csproj", "{EA1E8CC1-BCE7-47AE-8A42-900A0C429EF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySelfLog.Backend.Adapter", "MySelfLog.Backend.Adapter\MySelfLog.Backend.Adapter.csproj", "{572E243F-EE7A-4D31-A1E2-34BCC6349256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySelfLog.Backend.Adapter", "MySelfLog.Backend.Adapter\MySelfLog.Backend.Adapter.csproj", "{572E243F-EE7A-4D31-A1E2-34BCC6349256}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySelfLog.Backend.Domain", "MySelfLog.Backend.Domain\MySelfLog.Backend.Domain.csproj", "{0565D5F9-6207-46D1-AA95-2E02641B3746}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySelfLog.Backend.Domain", "MySelfLog.Backend.Domain\MySelfLog.Backend.Domain.csproj", "{0565D5F9-6207-46D1-AA95-2E02641B3746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySelfLog.Backend.Tests", "MySelfLog.Backend.Tests\MySelfLog.Backend.Tests.csproj", "{6EF23C45-B950-4FAB-A308-098B632E8DE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySelfLog.Backend.Tests", "MySelfLog.Backend.Tests\MySelfLog.Backend.Tests.csproj", "{6EF23C45-B950-4FAB-A308-098B632E8DE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySelfLog.Backend.WorkerService", "MySelfLog.Backend.WorkerService\MySelfLog.Backend.WorkerService.csproj", "{89E71089-9616-4A41-880D-005821A0B679}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6EF23C45-B950-4FAB-A308-098B632E8DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF23C45-B950-4FAB-A308-098B632E8DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF23C45-B950-4FAB-A308-098B632E8DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E71089-9616-4A41-880D-005821A0B679}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E71089-9616-4A41-880D-005821A0B679}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E71089-9616-4A41-880D-005821A0B679}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E71089-9616-4A41-880D-005821A0B679}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
