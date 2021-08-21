@@ -35,10 +35,8 @@ namespace MySelfLog.Backend.Adapter
             _subscriber.ErrorOccurred += _connection_ErrorOccurred;
             _subscriber.Closed += _connection_Closed;
             _subscriber.Reconnecting += _connection_Reconnecting;
-            _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;            
-            Log.Info("Connecting to EventStore...");
+            _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;   
             _subscriber.ConnectAsync().Wait();
-            Log.Info($"EndPoint started");
             return true;
         }
        
@@ -135,9 +133,10 @@ namespace MySelfLog.Backend.Adapter
             {
                 CreateSubscription();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // already exist
+                Log.Error($"Error while creating subscription: {ex.GetBaseException().Message}");
             }
             Subscribe();
         }
