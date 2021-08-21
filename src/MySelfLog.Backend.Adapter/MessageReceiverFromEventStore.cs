@@ -36,7 +36,8 @@ namespace MySelfLog.Backend.Adapter
             _subscriber.Closed += _connection_Closed;
             _subscriber.Reconnecting += _connection_Reconnecting;
             _subscriber.AuthenticationFailed += _connection_AuthenticationFailed;   
-            _subscriber.ConnectAsync().Wait();
+            _subscriber.ConnectAsync().Wait();            
+            Subscribe().Wait();
             return true;
         }
        
@@ -59,20 +60,18 @@ namespace MySelfLog.Backend.Adapter
             _handlers.Add(handler);
         }
 
-        private void CreateSubscription()
-        {
-            Log.Debug($"Creating subscription for stream '{_inputStream}'...");           
-            _subscriber.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+        private async Task CreateSubscription()
+        {               
+            await _subscriber.CreatePersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
                 PersistentSubscriptionSettings.Create().StartFromBeginning().DoNotResolveLinkTos(),
-                _subscriberBuilder.Credentials);
-            Task.Delay(1000); // remove this as it's only for debug
-            Log.Debug($"Subscription for stream '{_inputStream}' created");
+                _subscriberBuilder.Credentials);            
         }
 
-        private void Subscribe()
-        {
-            _subscriber.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
-                EventAppeared, SubscriptionDropped).Wait();
+        private async Task Subscribe()
+        {           
+            CreateSubscription();
+            await _subscriber.ConnectToPersistentSubscriptionAsync(_inputStream, _persistentSubscriptionGroup,
+                EventAppeared, SubscriptionDropped);
         }
 
         private static void SubscriptionDropped(
@@ -129,17 +128,7 @@ namespace MySelfLog.Backend.Adapter
         #region connectionevents
         private void _connection_Connected(object sender, ClientConnectionEventArgs e)
         {
-            Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");
-            try
-            {
-                CreateSubscription();
-            }
-            catch (Exception ex)
-            {
-                // already exist
-                Log.Error($"Error while creating subscription: {ex.GetBaseException().Message}");
-            }
-            Subscribe();
+            Log.Info($"{nameof(MessageReceiverFromEventStore)} Connected to {e.RemoteEndPoint}");           
         }
 
         private static void _connection_ErrorOccurred(object sender, ClientErrorEventArgs e)
@@ -147,9 +136,12 @@ namespace MySelfLog.Backend.Adapter
             Log.Error($"{nameof(MessageReceiverFromEventStore)} ErrorOccurred: {e.Exception.Message}");
         }
 
-        private static void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
+        private void _connection_Disconnected(object sender, ClientConnectionEventArgs e)
         {
             Log.Error($"{nameof(MessageReceiverFromEventStore)} Disconnected from {e.RemoteEndPoint}");
+            // Some black magic is going on with es and this is needed to re-establish the persistent subscription
+            Stop();
+            Start();
         }
         private void _connection_AuthenticationFailed(object sender, ClientAuthenticationFailedEventArgs e)
         {

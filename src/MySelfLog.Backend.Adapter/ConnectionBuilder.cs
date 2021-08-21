@@ -48,9 +48,10 @@ namespace MySelfLog.Backend.Adapter
 
             return connSettings.SetDefaultUserCredentials(new UserCredentials(settings.EventStore_Username,
                         settings.EventStore_Password))
+                    .KeepReconnecting().KeepRetrying()
                     .SetHeartbeatInterval(TimeSpan.FromSeconds(8))
                     .SetHeartbeatTimeout(TimeSpan.FromSeconds(4))
-                    .KeepReconnecting().KeepRetrying().Build();
+                    .Build();
         }
     }
 }
